@@ -2,6 +2,7 @@ package utils
 
 import (
 	"gitlab.ecoworkinc.com/subspace/subspace-utility/subspace/model"
+	"regexp"
 )
 
 // UserList and UserGet shared keys
@@ -39,6 +40,8 @@ type DataError struct {
 	problem string
 }
 
+var reFindUserId = regexp.MustCompile("([0-9]+)_[0-9]{10,}")
+
 func ParseUserList(hub string, data map[string]string) (brief *model.ProfileSnapshot, err *DataError) {
 	if _, ok := data[USER_NAME]; !ok {
 		return nil, &DataError{"Session must has name."}
@@ -62,9 +65,17 @@ func ParseUserGet(hub string, data map[string]string) (detail *model.ProfileSnap
 		return nil, &DataError{"Session must has name."}
 	}
 
+	var userId uint = 0
+	userName := data[USER_NAME]
+	matches := reFindUserId.FindAllStringSubmatch(userName, -1)
+	if 1 == len(matches) && 2 == len(matches[0]) {
+		userId = parseUInt(matches[0][1])
+	}
+
 	detail = &model.ProfileSnapshot{
 		Hub:                        hub,
 		UserName:                   data[USER_NAME],
+		UserId:                     userId,
 		FullName:                   data[FULL_NAME],
 		ExpirationDate:             data[EXPIRATION_DATE],
 		Description:                data[DESCRIPTION],
