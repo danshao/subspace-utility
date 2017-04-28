@@ -14,7 +14,7 @@ type ProfileSnapshot struct {
 	UserId       uint `json:"user_id" gorm:"column:user_id; unique_index:profile_snapshot_unique" sql:"type: int(11) unsigned NOT NULL"`
 
 	// UserList and UserGet shared column
-	UserName       string `json:"user_name" gorm:"column:user_name; unique_index:profile_snapshot_unique"`
+	UserName       string `json:"profile_username" gorm:"column:profile_username; unique_index:profile_snapshot_unique"`
 	Description    string `json:"description" gorm:"column:description"`
 	FullName       string `json:"full_name" gorm:"column:full_name"`
 	AuthType       string `json:"auth_type" gorm:"column:auth_type"`
