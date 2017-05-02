@@ -10,11 +10,11 @@ import (
 
 )
 
-type ProfileRepository interface {
+type ProfileSnapshotRepository interface {
 	InsertBatch(dataSet []*model.ProfileSnapshot) (err error)
 }
 
-type MysqlProfileRepository struct {
+type MysqlProfileSnapshotRepository struct {
 	Host string
 	Account string
 	Password string
@@ -22,9 +22,7 @@ type MysqlProfileRepository struct {
 
 }
 
-const MYSQL_URI_FORMAT = "%s:%s@tcp(%s:3306)/%s?charset=utf8&parseTime=True&loc=Local"
-
-func (repo *MysqlProfileRepository) InsertBatch(dataSet []*model.ProfileSnapshot) (err error) {
+func (repo *MysqlProfileSnapshotRepository) InsertBatch(dataSet []*model.ProfileSnapshot) (err error) {
 	uri := fmt.Sprintf(MYSQL_URI_FORMAT,
 		repo.Account,
 		repo.Password,
@@ -45,7 +43,7 @@ func (repo *MysqlProfileRepository) InsertBatch(dataSet []*model.ProfileSnapshot
 	return err
 }
 
-func (repo *MysqlProfileRepository) Insert(row *model.ProfileSnapshot) (err error) {
+func (repo *MysqlProfileSnapshotRepository) Insert(row *model.ProfileSnapshot) (err error) {
 	uri := fmt.Sprintf(MYSQL_URI_FORMAT,
 		repo.Account,
 		repo.Password,

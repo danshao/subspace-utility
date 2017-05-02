@@ -12,7 +12,7 @@ import (
 func main() {
 
 	s := softether.SoftEther{IP: "54.227.209.241", Password: "subspace", Hub: "subspace"}
-	repo := repository.MysqlProfileRepository{
+	repo := repository.MysqlProfileSnapshotRepository{
 		Host:         "54.227.209.241",
 		Account:      "subspace",
 		Password:     "subspace",
