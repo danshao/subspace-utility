@@ -4,14 +4,17 @@ import (
 	"time"
 	"math/big"
 	"strconv"
+	"fmt"
 )
 
 const SOFTETHER_DATE_FORMAT = "2006-01-02 15:04:05"
 func parseSoftetherDate(value string) (*time.Time) {
 	if t, err := time.Parse(SOFTETHER_DATE_FORMAT, value); nil == err {
 		return &t
+	} else {
+		fmt.Print(err)
+		return nil
 	}
-	return nil
 }
 
 func parseBigInt(value string) (*big.Int) {
