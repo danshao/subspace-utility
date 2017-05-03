@@ -42,18 +42,22 @@ type DataError struct {
 
 var reFindUserId = regexp.MustCompile("([0-9]+)_[0-9]{10,}")
 
-func ParseUserList(hub string, data map[string]string) (brief *model.ProfileSnapshot, err *DataError) {
+func ParseUserList(hub string, data map[string]string) (brief *model.SoftEtherUserBrief, err *DataError) {
 	if _, ok := data[USER_NAME]; !ok {
 		return nil, &DataError{"Session must has name."}
 	}
 
-	brief = &model.ProfileSnapshot{
+	brief = &model.SoftEtherUserBrief{
 		Hub:             hub,
 		UserName:        data[USER_NAME],
 		FullName:        data[FULL_NAME],
+		GroupName:       data[GROUP_NAME],
 		ExpirationDate:  data[EXPIRATION_DATE],
 		Description:     data[DESCRIPTION],
 		AuthType:        data[AUTH_TYPE_IN_USER_LIST],
+		LastLogin:       parseSoftetherDate(data[LAST_LOGIN]),
+		TransferBytes:   parseDecimal(data[TRANSFER_BYTES]),
+		TransferPackets: parseDecimal(data[TRANSFER_PACKETS]),
 		NumberOfLogins:  parseUInt(data[NUMBER_OF_LOGINS_IN_USER_LIST]),
 	}
 

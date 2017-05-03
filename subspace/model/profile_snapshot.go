@@ -6,6 +6,26 @@ import (
 
 //Generated using JSON 2 Go struct tool: https://mholt.github.io/json-to-go/
 
+//Mapping to SoftEther vpncmd UserList
+type SoftEtherUserBrief struct {
+	// Additional data
+	Hub string `json:"hub" grom:"column:hub; unique_index:profile_snapshot_unique"`
+
+	// UserList and UserGet shared column
+	UserName       string `json:"profile_username" gorm:"column:profile_username; unique_index:profile_snapshot_unique"`
+	FullName       string `json:"full_name" gorm:"column:full_name"`
+	Description    string `json:"description" gorm:"column:description"`
+	AuthType       string `json:"auth_type" gorm:"column:auth_type"`
+	ExpirationDate string `json:"expiration_date" gorm:"column:expiration_date"`
+	NumberOfLogins uint `json:"number_of_logins" sql:"column:number_of_logins; type: int(11) unsigned NOT NULL"`
+
+	// UserList
+	GroupName       string `json:"group_name" sql:"-"`
+	LastLogin       *time.Time `json:"last_login" sql:"-"`
+	TransferBytes   uint64 `json:"transfer_bytes" sql:"-"`
+	TransferPackets uint64 `json:"transfer_packets" sql:"-"`
+}
+
 type ProfileSnapshot struct {
 	// Additional data
 	Id           uint `json:"id" gorm:"column:id; primary_key:yes; type: int(11) unsigned NOT NULL AUTO_INCREMENT"`
@@ -21,12 +41,11 @@ type ProfileSnapshot struct {
 	ExpirationDate string `json:"expiration_date" gorm:"column:expiration_date"`
 	NumberOfLogins uint `json:"number_of_logins" sql:"column:number_of_logins; type: int(11) unsigned NOT NULL"`
 
-	//TODO maybe I don't need UserList
 	// UserList
-	//GroupName string `json:"Group Name"`
-	//LastLogin string `json:"Last Login"`
-	//TransferBytes big.Int `json:"Transfer Bytes"`
-	//TransferPackets big.Int `json:"Transfer Packets"`
+	GroupName       string `json:"group_name" sql:"-"`
+	LastLogin       *time.Time `json:"last_login" sql:"-"`
+	TransferBytes   uint64 `json:"transfer_bytes" sql:"-"`
+	TransferPackets uint64 `json:"transfer_packets" sql:"-"`
 
 	// UserGet
 	IncomingBroadcastPackets   uint64 `json:"incoming_broadcast_packets" sql:"column:incoming_broadcast_packets; type: decimal(65,0) unsigned NOT NULL; default: '0'"`
@@ -43,4 +62,11 @@ type ProfileSnapshot struct {
 
 func (ProfileSnapshot) TableName() string {
 	return "profile_snapshots"
+}
+
+func (profile *ProfileSnapshot) MergeSoftEtherUserBrief(brief *SoftEtherUserBrief) {
+	profile.GroupName = brief.GroupName
+	profile.TransferBytes = brief.TransferBytes
+	profile.TransferPackets = brief.TransferPackets
+	profile.LastLogin = brief.LastLogin
 }

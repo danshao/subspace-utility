@@ -40,6 +40,7 @@ func (repo *MysqlProfileRepository) UpdateBatch(dataSet []*model.ProfileSnapshot
 			"incoming_bytes": incomingBytes,
 			"outgoing_bytes": outgoingBytes,
 			"login_count": data.NumberOfLogins,
+			"last_login_date": data.LastLogin,
 		})
 	}
 	tx.Commit()
