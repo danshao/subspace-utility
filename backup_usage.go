@@ -11,32 +11,48 @@ const BACKUP_PATH = "/tmp/subspace.config"
 type MyBackupCallback struct {}
 
 func (c MyBackupCallback) OnStart() {
-	fmt.Println("backup start")
+	fmt.Println("backup OnStart")
 }
 
 func (c MyBackupCallback) OnCancel() {
-	fmt.Println("backup cancel")
+	fmt.Println("backup OnCancel")
 }
 
 func (c MyBackupCallback) OnSuccess(yaml string) {
-	fmt.Println("backup success to", BACKUP_PATH)
-	fmt.Println(yaml)
+	fmt.Println("backup OnSuccess to", BACKUP_PATH)
 }
 
 func (c MyBackupCallback) OnFail(e error) {
-	fmt.Println("backup fail.", e)
+	fmt.Println("backup callback OnFail.")
 }
 
 func main() {
 	backupController := backup.GetInstance()
-	backupController.Start(BACKUP_PATH, MyBackupCallback{})
+	backupController.SetCallback(MyBackupCallback{})  // Not necessary
+	backupController.Start(BACKUP_PATH)
 	ticker := time.NewTicker(time.Millisecond * 200)
 	for t := range ticker.C {
-		isRunning := backupController.IsBackingUp()
+		status := backupController.GetStatus()
+		switch status.Step {
+		case backup.IDLE:
+			fmt.Println(t, "backup idle")
+		case backup.RUNNING:
+			fmt.Println(t, "backup running")
+		case backup.SUCCEED:
+			fmt.Println(t, "backup succeed", status.Result)
+		case backup.FAILED:
+			fmt.Println(t, "backup failed", status.Error)
+		case backup.CANCELING:
+			fmt.Println(t, "backup canceling")
+		case backup.CANCELED:
+			fmt.Println(t, "backup canceled")
+		case backup.UNKNOWN:
+			fmt.Println(t, "something wrong")
+		}
+
+		isRunning := backupController.IsRunning()
 		if isRunning {
-			fmt.Println("backup running", t)
 		} else {
-			fmt.Println("backup stop", t)
 			ticker.Stop()
 		}
 	}

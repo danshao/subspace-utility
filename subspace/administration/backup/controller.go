@@ -22,6 +22,24 @@ type Callback interface {
 	OnFail(error)
 }
 
+type Step int
+
+const (
+	IDLE    = iota
+	RUNNING
+	SUCCEED
+	FAILED
+	CANCELING
+	CANCELED
+	UNKNOWN
+)
+
+type Status struct {
+	Step   Step
+	Result string
+	Error  error
+}
+
 func GetInstance() *controller {
 	once.Do(func() {
 		instance = &controller{}
@@ -31,11 +49,15 @@ func GetInstance() *controller {
 }
 
 type controller struct {
-	running      bool
-	canceled     bool
+	running  bool
+	canceled bool
 
 	dbUri string
 	db    *gorm.DB
+
+	callback Callback
+	result   string
+	err      error
 }
 
 func (controller *controller) init() {
@@ -46,24 +68,64 @@ func (controller *controller) SetDatabaseUri(uri string) {
 	controller.dbUri = uri
 }
 
-func (controller *controller) Start(path string, callback Callback) {
+func (controller *controller) SetCallback(callback Callback) {
+	controller.callback = callback
+}
+
+func (controller *controller) RemoveCallback(callback Callback) {
+	controller.callback = nil
+}
+
+func (controller *controller) Start(path string) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
 	if controller.running {
-		go callback.OnFail(errors.New("Back up process is currently running."))
+		controller.onFail(errors.New("Back up process is currently running."))
 		return
 	}
 
+	//Reset all status before run
 	controller.canceled = false
+	controller.result = ""
+	controller.err = nil
+
 	controller.running = true
+	controller.onStart()
 
-	go callback.OnStart()
-
-	go controller.run(path, callback)
+	go controller.run(path)
 }
 
-func (controller *controller) IsBackingUp() bool {
+func (controller *controller) GetStatus() Status {
+	status := Status{}
+	switch {
+	case !controller.running && nil == controller.err && "" == controller.result && !controller.canceled:
+		status.Step = IDLE
+
+	case controller.canceled && controller.running:
+		status.Step = CANCELING
+
+	case controller.canceled && !controller.running:
+		status.Step = CANCELED
+
+	case !controller.running && nil != controller.err:
+		status.Step = FAILED
+		status.Error = controller.err
+
+	case !controller.running && "" != controller.result:
+		status.Step = SUCCEED
+		status.Result = controller.result
+
+	case controller.running:
+		status.Step = RUNNING
+
+	default:  // Should never happen
+		status.Step = UNKNOWN
+	}
+	return status
+}
+
+func (controller *controller) IsRunning() bool {
 	return controller.running
 }
 
@@ -71,31 +133,35 @@ func (controller *controller) Cancel() {
 	controller.canceled = true
 }
 
-func (controller *controller) run(path string, callback Callback) {
+func (controller *controller) IsCanceled() bool {
+	return controller.canceled
+}
+
+func (controller *controller) run(path string) {
 	defer controller.cleanup()
 
 	if controller.canceled {
-		go callback.OnCancel()
+		controller.onCancel()
 		return
 	}
 
 	data, err := administration.GenerateConfig(controller.dbUri)
 	if nil != err {
-		go callback.OnFail(err)
+		controller.onFail(err)
 		return
 	}
 
 	if controller.canceled {
-		go callback.OnCancel()
+		controller.onCancel()
 		return
 	}
 
 	if e := writeToFile(path, data); nil != e {
-		go callback.OnFail(e)
+		controller.onFail(e)
 		return
 	}
 
-	go callback.OnSuccess(data)
+	controller.onSuccess(data)
 }
 
 func writeToFile(path string, data string) error {
@@ -120,4 +186,30 @@ func writeToFile(path string, data string) error {
 
 func (controller *controller) cleanup() {
 	controller.running = false
+}
+
+func (controller *controller) onStart() {
+	if nil != controller.callback {
+		go controller.callback.OnStart()
+	}
+}
+
+func (controller *controller) onCancel() {
+	if nil != controller.callback {
+		go controller.callback.OnCancel()
+	}
+}
+
+func (controller *controller) onSuccess(result string) {
+	controller.result = result
+	if nil != controller.callback {
+		go controller.callback.OnSuccess(result)
+	}
+}
+
+func (controller *controller) onFail(e error) {
+	controller.err = e
+	if nil != controller.callback {
+		go controller.callback.OnFail(e)
+	}
 }
