@@ -3,10 +3,10 @@ package main
 import (
 	"time"
 	"fmt"
-	"gitlab.ecoworkinc.com/subspace/softetherlib/softether"
-	"gitlab.ecoworkinc.com/subspace/subspace-utility/subspace/model"
-	"gitlab.ecoworkinc.com/subspace/subspace-utility/subspace/repository"
-	"gitlab.ecoworkinc.com/subspace/subspace-utility/subspace/utils"
+	"gitlab.ecoworkinc.com/Subspace/softetherlib/softether"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/repository"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 )
 
 func main() {
