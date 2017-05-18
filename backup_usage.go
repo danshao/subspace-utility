@@ -26,7 +26,7 @@ func (c MyBackupCallback) OnFail(e error) {
 	fmt.Println("backup callback OnFail.")
 }
 
-func main() {
+func sample() {
 	backupController := backup.GetInstance()
 	backupController.SetCallback(MyBackupCallback{})  // Not necessary
 	backupController.Start(BACKUP_PATH)
