@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"gitlab.ecoworkinc.com/subspace/subspace-utility/subspace/model"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 	"regexp"
 )
 

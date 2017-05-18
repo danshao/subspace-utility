@@ -6,8 +6,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/jinzhu/gorm"
-	"gitlab.ecoworkinc.com/subspace/subspace-utility/subspace/model"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 )
 
 type ProfileSnapshotRepository interface {
@@ -23,7 +24,7 @@ type MysqlProfileSnapshotRepository struct {
 }
 
 func (repo *MysqlProfileSnapshotRepository) InsertBatch(dataSet []*model.ProfileSnapshot) (err error) {
-	uri := fmt.Sprintf(MYSQL_URI_FORMAT,
+	uri := fmt.Sprintf(config.MYSQL_URI_FORMAT,
 		repo.Account,
 		repo.Password,
 		repo.Host,
@@ -44,7 +45,7 @@ func (repo *MysqlProfileSnapshotRepository) InsertBatch(dataSet []*model.Profile
 }
 
 func (repo *MysqlProfileSnapshotRepository) Insert(row *model.ProfileSnapshot) (err error) {
-	uri := fmt.Sprintf(MYSQL_URI_FORMAT,
+	uri := fmt.Sprintf(config.MYSQL_URI_FORMAT,
 		repo.Account,
 		repo.Password,
 		repo.Host,
