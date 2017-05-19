@@ -7,7 +7,6 @@ import (
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration"
 	"os"
 	"bufio"
-	"errors"
 )
 
 var instance *controller
@@ -76,13 +75,12 @@ func (controller *controller) RemoveCallback(callback Callback) {
 	controller.callback = nil
 }
 
-func (controller *controller) Start(path string) {
+func (controller *controller) Start(path string) (success bool) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
 	if controller.running {
-		controller.onFail(errors.New("Back up process is currently running."))
-		return
+		return false
 	}
 
 	//Reset all status before run
@@ -94,6 +92,7 @@ func (controller *controller) Start(path string) {
 	controller.onStart()
 
 	go controller.run(path)
+	return true
 }
 
 func (controller *controller) GetStatus() Status {
