@@ -1,30 +1,39 @@
-package utils
+package configuration
 
 import (
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration/configuration"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 )
 
-func ToUserV1(u model.User) configuration.UserV1 {
-	userV1 := configuration.UserV1{
-		Id:               u.Id,
-		Email:            u.Email,
-		Alias:            u.Alias,
-		Role:             u.Role,
-		EmailVerified:    u.EmailVerified,
-		Enabled:          u.Enabled,
-		PasswordHash:     u.PasswordHash,
-		SetPasswordToken: u.SetPasswordToken,
-
-		RevokedDate:   u.RevokedDate,
-		LastLoginDate: u.LastLoginDate,
-		UpdatedDate:   u.UpdatedDate,
-		CreatedDate:   u.CreatedDate,
+/**
+	Convert System
+ */
+func ParseSystemFromConfigV1(c ConfigV1) model.System {
+	return model.System{
+		Restriction: "",
+		SubspaceVersion: c.SubspaceVersion,
+		SubspaceBuildNumber: c.SubspaceBuildNumber,
+		VpnServerVersion: c.VpnServerVersion,
+		VpnServerBuildNumber: c.SubspaceBuildNumber,
+		Ip: c.Ip,
+		//IpUpdatedDate: c.IpUpdatedDate,
+		Host: c.Host,
+		//HostUpdatedDate: c.HostUpdatedDate,
+		PreSharedKey: c.PreSharedKey,
+		//PreSharedKeyUpdatedDate: c.PreSharedKeyUpdatedDate,
+		Uuid: c.Uuid,
+		//UuidUpdatedDate: c.UuidUpdatedDate,
+		ConfigSchemaVersion: c.ConfigSchemaVersion,
+		UserSchemaVersion: c.UserSchemaVersion,
+		ProfileSchemaVersion: c.ProfileSchemaVersion,
+		//UpdatedDate: c.UpdatedDate,
+		//CreatedAt: c.CreatedAt,
 	}
-	return userV1
 }
 
-func ToUser(u configuration.UserV1) model.User {
+/**
+	Convert User
+ */
+func ParseUserV1(u UserV1) model.User {
 	user := model.User{
 		Id:               u.Id,
 		Email:            u.Email,
@@ -43,8 +52,30 @@ func ToUser(u configuration.UserV1) model.User {
 	return user
 }
 
-func ToProfileV1(p model.Profile) configuration.ProfileV1 {
-	profileV1 := configuration.ProfileV1{
+func ToUserV1(u model.User) UserV1 {
+	userV1 := UserV1{
+		Id:               u.Id,
+		Email:            u.Email,
+		Alias:            u.Alias,
+		Role:             u.Role,
+		EmailVerified:    u.EmailVerified,
+		Enabled:          u.Enabled,
+		PasswordHash:     u.PasswordHash,
+		SetPasswordToken: u.SetPasswordToken,
+
+		RevokedDate:   u.RevokedDate,
+		LastLoginDate: u.LastLoginDate,
+		UpdatedDate:   u.UpdatedDate,
+		CreatedDate:   u.CreatedDate,
+	}
+	return userV1
+}
+
+/**
+	Convert profile
+ */
+func ToProfileV1(p model.Profile) ProfileV1 {
+	profileV1 := ProfileV1{
 		Id:           p.Id,
 		Hub:          p.Hub,
 		UserName:     p.UserName,
@@ -67,7 +98,7 @@ func ToProfileV1(p model.Profile) configuration.ProfileV1 {
 	return profileV1
 }
 
-func ToProfile(p configuration.ProfileV1) model.Profile {
+func ParseProfileV1(p ProfileV1) model.Profile {
 	profile := model.Profile{
 		Id:           p.Id,
 		Hub:          p.Hub,
