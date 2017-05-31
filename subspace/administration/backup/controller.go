@@ -5,8 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration"
-	"os"
-	"bufio"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 )
 
 var instance *controller
@@ -155,32 +154,12 @@ func (controller *controller) run(path string) {
 		return
 	}
 
-	if e := writeToFile(path, data); nil != e {
+	if e := utils.WriteToFile(path, data); nil != e {
 		controller.onFail(e)
 		return
 	}
 
-	controller.onSuccess(data)
-}
-
-func writeToFile(path string, data string) error {
-	file, err := os.Create(path)
-	defer file.Close()
-
-	if nil != err {
-		return err
-	}
-
-	bufferWriter := bufio.NewWriter(file)
-	if _, e := bufferWriter.WriteString(data); nil != e {
-		return e
-	}
-
-	if e := bufferWriter.Flush(); nil != e {
-		return e
-	}
-
-	return nil
+	defer controller.onSuccess(data)
 }
 
 func (controller *controller) cleanup() {
