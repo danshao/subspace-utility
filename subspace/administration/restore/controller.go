@@ -229,7 +229,7 @@ func (controller *controller) run(path string) {
 
 	// Update system data
 	sys := cfg.GetSystem()
-	db.Table(sys.TableName()).Updates(&sys.DataToRestore())
+	db.Table(sys.TableName()).Updates(sys.DataToRestore())
 
 	// Insert user data
 	for _, user := range cfg.GetUsers() {
