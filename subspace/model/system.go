@@ -53,7 +53,7 @@ func (System) TableName() string {
     profile_schema_version,
     config_schema_version,
 */
-func (sys *System) DataToRestore() map[string]interface{} {
+func (sys System) DataToRestore() map[string]interface{} {
 	now := time.Now()
 	return map[string]interface{}{
 		"host":                        sys.Host,
