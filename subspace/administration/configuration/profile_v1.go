@@ -6,24 +6,26 @@ import (
 )
 
 type ProfileV1 struct {
-	Id           uint
-	Hub          string
-	UserName     string
-	UserId       uint
-	Description  string
-	Enabled      bool
-	LoginCount   uint
-	VpnHost      string
-	PreSharedKey string
-	PasswordHash string
+	Id             uint   `yaml:"id"`
+	Hub            string `yaml:"hub"`
+	UserName       string `yaml:"username"`
+	PasswordHash   string `yaml:"password_hash"`
+	NtLmSecureHash string `yaml:"ntlm_secure_hash"`
+	UserId         uint   `yaml:"user_id"`
+	FullName       string `yaml:"full_name"`
+	Description    string `yaml:"description"`
+	Enabled        bool   `yaml:"enabled"`
+	LoginCount     uint   `yaml:"login_count"`
+	VpnHost        string `yaml:"vpn_host"`
+	PreSharedKey   string `yaml:"pre_shared_key"`
 
-	//IncomingBytes uint
-	//OutgoingBytes uint
+	//IncomingBytes uint `yaml:"incoming_bytes"`
+	//OutgoingBytes uint `yaml:"outgoing_bytes"`
 
-	RevokedDate   time.Time  `yaml:"RevokedDate,omitempty"`
-	LastLoginDate time.Time  `yaml:"LastLoginDate,omitempty"`
-	UpdatedDate   time.Time
-	CreatedDate   time.Time
+	RevokedDate   time.Time `yaml:"revoked_date,omitempty"`
+	LastLoginDate time.Time `yaml:"lastLogin_date,omitempty"`
+	UpdatedDate   time.Time `yaml:"updated_date"`
+	CreatedDate   time.Time `yaml:"created_date"`
 }
 
 func (profile *ProfileV1) Validate() error {

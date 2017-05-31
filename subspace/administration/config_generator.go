@@ -2,13 +2,11 @@ package administration
 
 import (
 	"fmt"
-	"bytes"
 	"gopkg.in/yaml.v2"
 	"github.com/jinzhu/gorm"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration/configuration"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
-	"time"
 )
 
 func GenerateConfig(dbUri string) (string, error) {
@@ -50,11 +48,7 @@ func generateConfigV1(dbUri string) (string, error) {
 	}
 
 	// Construct config data
-	config := configuration.ConfigV1{}
-	config.CreatedTime = time.Now()
-	copyDataFromSystem(&config, &system)
-	config.Users = users
-	config.Profiles = profiles
+	config := configuration.ToConfigV1(system, users, profiles)
 
 	// Add checksum
 	chkSum := config.CalculateCheckSum()
@@ -65,39 +59,6 @@ func generateConfigV1(dbUri string) (string, error) {
 	} else {
 		return "", err
 	}
-}
-
-func formatWriteLockTables(tableNames ...string) string {
-	var buffer bytes.Buffer
-
-	buffer.WriteString("LOCK TABLES")
-	for index, name := range tableNames {
-		buffer.WriteString(fmt.Sprintf(" %s WRITE", name))
-		if index < len(tableNames) - 1 {
-			buffer.WriteString(",")
-		}
-	}
-	buffer.WriteString(";")
-	return buffer.String()
-}
-
-func copyDataFromSystem(config *configuration.ConfigV1, system *model.System) {
-	config.SubspaceVersion = system.SubspaceVersion
-	config.SubspaceBuildNumber = system.SubspaceBuildNumber
-	config.VpnServerVersion = system.VpnServerVersion
-	config.VpnServerBuildNumber = system.VpnServerBuildNumber
-	config.Ip = system.Ip
-	config.Host = system.Host
-	config.PreSharedKey = system.PreSharedKey
-	config.Uuid = system.Uuid
-	config.SmtpHost = system.SmtpHost
-	config.SmtpPort = system.SmtpPort
-	config.SmtpUsername = system.SmtpUsername
-	config.SmtpPassword = system.SmtpPassword
-	config.SmtpValid = system.SmtpValid
-	config.UserSchemaVersion = system.UserSchemaVersion
-	config.ProfileSchemaVersion = system.ProfileSchemaVersion
-	config.ConfigSchemaVersion = system.ConfigSchemaVersion
 }
 
 func getSystem(db *gorm.DB) (model.System, error) {

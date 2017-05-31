@@ -7,15 +7,15 @@ import (
 )
 
 var account = vpn.Account{
-	Username: "1_1495004926659038074",
-	Password: "SFi5yU4lSh",
-	Email: "carterlin@ecoworkinc.com",
-	Description: "Default Admin VPN Profile",
-	LoginCount: 1,
-	ExpireTime: time.Unix(0, 0 * int64(time.Millisecond)),
+	Username:      "1_1495004926659038074",
+	Password:      "SFi5yU4lSh",
+	RawRealName:   "carterlin@ecoworkinc.com",
+	RawNote:       "Default Admin VPN Profile",
+	LoginCount:    1,
+	ExpireTime:    time.Unix(0, 0 * int64(time.Millisecond)),
 	LastLoginTime: time.Unix(0, 1495665787182 * int64(time.Millisecond)),
-	CreatedTime: time.Unix(0, 1494972526771 * int64(time.Millisecond)),
-	UpdatedTime: time.Unix(0, 1494972526908 * int64(time.Millisecond)),
+	CreatedTime:   time.Unix(0, 1494972526771 * int64(time.Millisecond)),
+	UpdatedTime:   time.Unix(0, 1494972526908 * int64(time.Millisecond)),
 }
 
 var hub = vpn.Hub{
@@ -24,6 +24,7 @@ var hub = vpn.Hub{
 }
 
 var server = vpn.Softether{
+	AdministrationPort: 992,
 	Hub: hub,
 	AdminPassword: "subspace",
 	PreSharedKey: "subspace",

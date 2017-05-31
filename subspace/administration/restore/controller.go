@@ -11,8 +11,6 @@ import (
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/vpn"
 )
 
-const SOFTETHER_CONFIG_PATH = "/usr/local/vpnserver/vpn_server.config"
-
 var instance *controller
 var once sync.Once
 
@@ -28,7 +26,7 @@ type Callback interface {
 type Step int
 
 const (
-	IDLE    = iota
+	IDLE      = iota
 	RUNNING
 	SUCCEED
 	FAILED
@@ -44,13 +42,12 @@ type Status struct {
 }
 
 // Define service start sequence. Service monit should be started at the end.
-var SERVICES = []string {
+var SERVICES = []string{
 	"vpnsession",
 	"vpnprofile",
 	"vpnserver",
 	"monit",
 }
-
 
 func GetInstance() *controller {
 	once.Do(func() {
@@ -141,7 +138,7 @@ func (controller *controller) GetStatus() Status {
 	case controller.running:
 		status.Step = RUNNING
 
-	default:  // Should never happen
+	default: // Should never happen
 		status.Step = UNKNOWN
 	}
 	return status
@@ -174,7 +171,7 @@ func (controller *controller) run(path string) {
 		return
 	}
 
-	cfg, err :=administration.ParseConfig(yamlData)
+	cfg, err := administration.ParseConfig(yamlData)
 	if nil != err {
 		controller.onFail(err)
 		return
@@ -249,11 +246,13 @@ func (controller *controller) run(path string) {
 
 	// Format softether cfg
 	vpnServer := vpn.Softether{
+		AdministrationPort: config.DEFAULT_VPN_SERVER_ADMINISTRATION_PORT,
+		AdminPassword: config.DEFAULT_VPN_SERVER_ADMINISTRATION_PASSWORD,
+		PreSharedKey: sys.PreSharedKey,
 		Hub: vpn.Hub{
+			Name: config.DEFAULT_HUB_NAME,
 			Accounts: accounts,
 		},
-		AdminPassword: "subspace",  //TODO sys.AdminPassword
-		PreSharedKey: sys.PreSharedKey,
 	}
 	softetherConfig, err := vpn.GenerateSoftetherConfig(vpnServer)
 	if nil != err {
@@ -262,7 +261,7 @@ func (controller *controller) run(path string) {
 	}
 
 	// Write Softether config
-	if err := utils.WriteToFile(SOFTETHER_CONFIG_PATH, softetherConfig); nil != err {
+	if err := utils.WriteToFile(config.SOFTETHER_CONFIG_PATH, softetherConfig); nil != err {
 		controller.onFail(err)
 		return
 	}
@@ -303,16 +302,16 @@ func (controller *controller) onFail(e error) {
 
 func ToAccount(p model.Profile) vpn.Account {
 	profile := vpn.Account{
-		Username       : p.UserName,
-		PasswordHash   : p.PasswordHash,
-		NtLmSecureHash : "",  //TODO p.NtLmSecureHash
-		Email          : "", //TODO p.Email
-		Description    : p.Description,
-		LoginCount     : p.LoginCount,
-		RevokedTime    : p.RevokedDate,
-		LastLoginTime  : p.LastLoginDate,
-		UpdatedTime    : p.UpdatedDate,
-		CreatedTime    : p.CreatedDate,
+		Username:       p.UserName,
+		PasswordHash:   p.PasswordHash,
+		NtLmSecureHash: p.NtLmSecureHash,
+		RawRealName:    p.FullName,
+		RawNote:        p.Description,
+		LoginCount:     p.LoginCount,
+		RevokedTime:    p.RevokedDate,
+		LastLoginTime:  p.LastLoginDate,
+		UpdatedTime:    p.UpdatedDate,
+		CreatedTime:    p.CreatedDate,
 	}
 	return profile
 }

@@ -6,13 +6,12 @@ import (
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 )
 
-//TODO Softether admin password, vpncmd port, hub name 要存 DB
-
 type Softether struct {
-	PreSharedKey      string
-	AdminPassword     string // Need hashed
-	AdminPasswordHash string
-	Hub               Hub
+	PreSharedKey       string
+	AdminPassword      string // Need hashed
+	AdminPasswordHash  string
+	Hub                Hub
+	AdministrationPort uint
 }
 
 func (softether Softether) GetAdminPasswordHash() string {
@@ -31,6 +30,10 @@ func (softether Softether) GetDefaultHub() string {
 	return softether.Hub.Name
 }
 
+func (softether Softether) GetDefaultAdministrationPort() uint {
+	return softether.AdministrationPort
+}
+
 type Hub struct {
 	Name     string
 	Accounts []Account
@@ -41,9 +44,9 @@ type Account struct {
 	Password       string // Need hash
 	PasswordHash   string
 	NtLmSecureHash string
-	Email          string //RealName
+	RawRealName    string //RealName
 	RealName       string
-	Description    string //Note
+	RawNote        string //Note
 	Note           string
 	LoginCount     uint
 	ExpireTime     time.Time // softether config expire time
@@ -83,7 +86,7 @@ func (ac Account) GetRealName() string {
 	if "" != ac.RealName {
 		return ac.RealName
 	} else {
-		return GenerateSoftetherEncodedString(ac.Email)
+		return GenerateSoftetherEncodedString(ac.RawRealName)
 	}
 }
 
@@ -91,7 +94,7 @@ func (ac Account) GetNote() string {
 	if "" != ac.Note {
 		return ac.Note
 	} else {
-		return GenerateSoftetherEncodedString(ac.Description)
+		return GenerateSoftetherEncodedString(ac.RawNote)
 	}
 }
 
@@ -116,4 +119,3 @@ func (ac Account) GetExpireTime() int64 {
 func (ac Account) GetLastLoginTime() int64 {
 	return utils.ToUnixTimestampInMillisecond(ac.LastLoginTime)
 }
-

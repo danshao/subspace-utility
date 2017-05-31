@@ -8,19 +8,19 @@ import (
 )
 
 type UserV1 struct {
-	Id               uint
-	Email            string
-	Alias            string
-	Role             string
-	EmailVerified    bool
-	Enabled          bool
-	PasswordHash     string
-	SetPasswordToken string
+	Id               uint   `yaml:"id"`
+	Email            string `yaml:"email"`
+	Alias            string `yaml:"alias"`
+	Role             string `yaml:"role"`
+	EmailVerified    bool   `yaml:"email_verified"`
+	Enabled          bool   `yaml:"enabled"`
+	PasswordHash     string `yaml:"password_hash"`
+	SetPasswordToken string `yaml:"set_password_token"`
 
-	RevokedDate   time.Time  `yaml:",omitempty"`
-	LastLoginDate time.Time  `yaml:",omitempty"`
-	UpdatedDate   time.Time
-	CreatedDate   time.Time
+	RevokedDate   time.Time `yaml:"revoked_date,omitempty"`
+	LastLoginDate time.Time `yaml:"last_login_date,omitempty"`
+	UpdatedDate   time.Time `yaml:"updated_date"`
+	CreatedDate   time.Time `yaml:"created_date"`
 }
 
 func (user *UserV1) Validate(acceptRoles []string) error {

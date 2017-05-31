@@ -16,32 +16,35 @@ import (
 const SALT = "5ubSp4ce@EcoworkInc"
 
 type ConfigV1 struct {
-	ConfigSchemaVersion uint
-	CreatedTime         time.Time
-	InstanceId          string
-	Uuid                string
-	Host                string
-	Ip                  string
-	PreSharedKey        string
-	CheckSum            string
+	ConfigSchemaVersion uint         `yaml:"config_schema_version"`
+	CreatedTime         time.Time    `yaml:"created_time"`
+	InstanceId          string       `yaml:"instance_id"`
+	Uuid                string       `yaml:"uuid"`
+	VpnHost             string       `yaml:"vpn_host"`
+	Ip                  string       `yaml:"ip"`
+	PreSharedKey        string       `yaml:"pre_shared_key"`
+	CheckSum            string       `yaml:"check_sum"`
 
-	SmtpHost     string
-	SmtpPort     uint
-	SmtpUsername string
-	SmtpPassword string
-	SmtpValid    bool
+	SmtpHost     string              `yaml:"smtp_host"`
+	SmtpPort     uint                `yaml:"smtp_port"`
+	SmtpUsername string              `yaml:"smtp_username"`
+	SmtpPassword string              `yaml:"smtp_password"`
+	SmtpValid    bool                `yaml:"smtp_valid"`
 
-	SubspaceVersion     string
-	SubspaceBuildNumber uint
+	SubspaceVersion     string       `yaml:"subspace_version"`
+	SubspaceBuildNumber uint         `yaml:"subspace_build_number"`
 
-	VpnServerVersion     string
-	VpnServerBuildNumber uint
+	VpnServerVersion                string      `yaml:"vpn_server_version"`
+	VpnServerBuildNumber            uint        `yaml:"vpn_server_build_number"`
+	VpnServerAdministrationPassword string      `yaml:"vpn_server_administration_password"`
+	VpnServerAdministrationPort     uint        `yaml:"vpn_server_administration_port"`
+	VpnHubName                      string      `yaml:"vpn_hub_name"`
 
-	UserSchemaVersion uint
-	Users             []UserV1
+	UserSchemaVersion uint           `yaml:"user_schema_version"`
+	Users             []UserV1       `yaml:"users"`
 
-	ProfileSchemaVersion uint
-	Profiles             []ProfileV1
+	ProfileSchemaVersion uint        `yaml:"profiles_schema_version"`
+	Profiles             []ProfileV1 `yaml:"profiles"`
 }
 
 func (c *ConfigV1) GetConfigSchemaVersion() uint {
@@ -93,7 +96,7 @@ func (c ConfigV1) Validate() error {
 		return errors.New("Pre-shared key is invalid.")
 	}
 
-	if "" == c.Host || utils.IsValidHost(c.Host) {
+	if "" == c.VpnHost || utils.IsValidHost(c.VpnHost) {
 		return errors.New("Host is invalid.")
 	}
 
