@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration/backup"
 	"time"
+	"testing"
 )
 
 const BACKUP_PATH = "/tmp/subspace.config"
@@ -26,10 +27,11 @@ func (c MyBackupCallback) OnFail(e error) {
 	fmt.Println("backup callback OnFail.")
 }
 
-func sample() {
+func TestBackup(*testing.T) {
 	backupController := backup.GetInstance()
 	backupController.SetCallback(MyBackupCallback{})  // Not necessary
 	backupController.Start(BACKUP_PATH)
+	
 	ticker := time.NewTicker(time.Millisecond * 200)
 	for t := range ticker.C {
 		status := backupController.GetStatus()
@@ -54,6 +56,7 @@ func sample() {
 		if isRunning {
 		} else {
 			ticker.Stop()
+			break
 		}
 	}
 }

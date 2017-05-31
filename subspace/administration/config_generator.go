@@ -2,13 +2,11 @@ package administration
 
 import (
 	"fmt"
-	"bytes"
 	"gopkg.in/yaml.v2"
 	"github.com/jinzhu/gorm"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration/configuration"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
-	"time"
 )
 
 func GenerateConfig(dbUri string) (string, error) {
@@ -24,9 +22,12 @@ func generateConfigV1(dbUri string) (string, error) {
 	}
 
 	// Lock table write
-	lockTableSql := formatWriteLockTables(model.Profile{}.TableName())
-	db.Raw(lockTableSql)
-	defer db.Raw("UNLOCK TABLES")
+	utils.LockTableWrite(db,
+		model.User{}.TableName(),
+		model.Profile{}.TableName(),
+		model.System{}.TableName(),
+	)
+	defer utils.UnlockTable(db)
 
 	// Get system data
 	system, err := getSystem(db)
@@ -47,11 +48,7 @@ func generateConfigV1(dbUri string) (string, error) {
 	}
 
 	// Construct config data
-	config := configuration.ConfigV1{}
-	config.CreatedTime = time.Now()
-	copyDataFromSystem(&config, &system)
-	config.Users = users
-	config.Profiles = profiles
+	config := configuration.ToConfigV1(system, users, profiles)
 
 	// Add checksum
 	chkSum := config.CalculateCheckSum()
@@ -62,34 +59,6 @@ func generateConfigV1(dbUri string) (string, error) {
 	} else {
 		return "", err
 	}
-}
-
-func formatWriteLockTables(tableNames ...string) string {
-	var buffer bytes.Buffer
-
-	buffer.WriteString("LOCK TABLES")
-	for index, name := range tableNames {
-		buffer.WriteString(fmt.Sprintf(" %s WRITE", name))
-		if index < len(tableNames) - 1 {
-			buffer.WriteString(",")
-		}
-	}
-	buffer.WriteString(";")
-	return buffer.String()
-}
-
-func copyDataFromSystem(config *configuration.ConfigV1, system *model.System) {
-	config.SubspaceVersion = system.SubspaceVersion
-	config.SubspaceBuildNumber = system.SubspaceBuildNumber
-	config.VpnServerVersion = system.VpnServerVersion
-	config.VpnServerBuildNumber = system.VpnServerBuildNumber
-	config.Ip = system.Ip
-	config.Host = system.Host
-	config.PreSharedKey = system.PreSharedKey
-	config.Uuid = system.Uuid
-	config.UserSchemaVersion = system.UserSchemaVersion
-	config.ProfileSchemaVersion = system.ProfileSchemaVersion
-	config.ConfigSchemaVersion = system.ConfigSchemaVersion
 }
 
 func getSystem(db *gorm.DB) (model.System, error) {
@@ -105,7 +74,7 @@ func getSystem(db *gorm.DB) (model.System, error) {
 	} else {
 		funcName = "INET_NTOA"
 	}
-	sql := fmt.Sprintf("SELECT `restriction`, `subspace_version`, `subspace_build_number`, `vpn_server_version`, `vpn_server_build_number`, %s(ip) AS `ip`, `ip_updated_date`, `host`, `host_updated_date`, `pre_shared_key`, `pre_shared_key_updated_date`, `uuid`, `uuid_updated_date`, `user_schema_version`, `profile_schema_version`, `config_schema_version`, `updated_date`, `created_at` FROM %s", funcName, systemData.TableName())
+	sql := fmt.Sprintf("SELECT `restriction`, `subspace_version`, `subspace_build_number`, `vpn_server_version`, `vpn_server_build_number`, %s(ip) AS `ip`, `ip_updated_date`, `host`, `host_updated_date`, `pre_shared_key`, `pre_shared_key_updated_date`, `uuid`, `uuid_updated_date`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `smtp_valid`, `user_schema_version`, `profile_schema_version`, `config_schema_version`, `updated_date`, `created_at` FROM %s", funcName, systemData.TableName())
 	db.Raw(sql).Scan(&systemData)
 	if nil != db.Error {
 		return systemData, db.Error
@@ -122,7 +91,7 @@ func getUsers(db *gorm.DB) ([]configuration.UserV1, error) {
 
 	var configUsers = make([]configuration.UserV1, 0)
 	for _, user := range users {
-		u := utils.ToUserV1(user)
+		u := configuration.ToUserV1(user)
 		configUsers = append(configUsers, u)
 	}
 	return configUsers, nil
@@ -137,7 +106,7 @@ func getProfiles(db *gorm.DB) ([]configuration.ProfileV1, error) {
 
 	var configProfiles = make([]configuration.ProfileV1, 0)
 	for _, profile := range profiles {
-		p := utils.ToProfileV1(profile)
+		p := configuration.ToProfileV1(profile)
 		configProfiles = append(configProfiles, p)
 	}
 	return configProfiles, nil
