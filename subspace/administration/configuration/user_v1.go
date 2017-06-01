@@ -17,26 +17,26 @@ type UserV1 struct {
 	PasswordHash     string `yaml:"password_hash"`
 	SetPasswordToken string `yaml:"set_password_token"`
 
-	RevokedDate   time.Time `yaml:"revoked_date,omitempty"`
-	LastLoginDate time.Time `yaml:"last_login_date,omitempty"`
+	RevokedDate   *time.Time `yaml:"revoked_date,omitempty"`
+	LastLoginDate *time.Time `yaml:"last_login_date,omitempty"`
 	UpdatedDate   time.Time `yaml:"updated_date"`
 	CreatedDate   time.Time `yaml:"created_date"`
 }
 
 func (user *UserV1) Validate(acceptRoles []string) error {
-	if 0 < user.Id {
-		return errors.New("User id must >= 0.")
+	if 0 >= user.Id {
+		return errors.New("User id must > 0.")
 	}
 
-	if utils.IsValidEmailFormat(user.Email) {
+	if !utils.IsValidEmailFormat(user.Email) {
 		return errors.New("Email is invalid.")
 	}
 
-	if utils.IsStringInArray(user.Role, acceptRoles) {
+	if !utils.IsStringInArray(user.Role, acceptRoles) {
 		return errors.New(fmt.Sprintf("Role is not in %v.", acceptRoles))
 	}
 
-	if "" != user.PasswordHash {
+	if "" == user.PasswordHash {
 		return errors.New("Password hash cannot be empty.")
 	}
 

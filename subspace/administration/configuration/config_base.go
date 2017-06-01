@@ -19,7 +19,7 @@ type SubspaceConfig interface {
 }
 
 type ConfigBase struct {
-	ConfigSchemaVersion uint
+	ConfigSchemaVersion uint `yaml:"config_schema_version"`
 }
 
 func (c *ConfigBase) GetConfigSchemaVersion() uint {

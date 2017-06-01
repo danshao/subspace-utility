@@ -6,14 +6,17 @@ import (
 	"time"
 )
 
+var expire_time = time.Unix(0, 0 * int64(time.Millisecond))
+var last_login_time = time.Unix(0, 1495665787182 * int64(time.Millisecond))
+
 var account = vpn.Account{
 	Username:      "1_1495004926659038074",
 	Password:      "SFi5yU4lSh",
 	RawRealName:   "carterlin@ecoworkinc.com",
 	RawNote:       "Default Admin VPN Profile",
 	LoginCount:    1,
-	ExpireTime:    time.Unix(0, 0 * int64(time.Millisecond)),
-	LastLoginTime: time.Unix(0, 1495665787182 * int64(time.Millisecond)),
+	ExpireTime:    &expire_time,
+	LastLoginTime: &last_login_time,
 	CreatedTime:   time.Unix(0, 1494972526771 * int64(time.Millisecond)),
 	UpdatedTime:   time.Unix(0, 1494972526908 * int64(time.Millisecond)),
 }

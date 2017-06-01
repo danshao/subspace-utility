@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"regexp"
 	"bytes"
-	"strings"
 )
 
 type IpString struct {
@@ -47,7 +46,7 @@ func IsIpV6(db *gorm.DB, tableName string, columnName string) (bool, error) {
 }
 
 type EnumResult struct {
-	Type string
+	Type string `gorm:"column:Type"`
 }
 
 
@@ -69,14 +68,14 @@ func GetAcceptableRoles(db *gorm.DB, tableName string, columnName string) ([]str
 
 
 func UnlockTable(db *gorm.DB) error {
-	db.Raw("UNLOCK TABLES")
+	db.Exec("UNLOCK TABLES")
 	return db.Error
 }
 
 
 func LockTableWrite(db *gorm.DB, tableNames ...string) error {
 	lockTableSql := formatWriteLockTables(tableNames)
-	db.Raw(lockTableSql)
+	db.Exec(lockTableSql)
 	return db.Error
 }
 
@@ -96,13 +95,15 @@ func formatWriteLockTables(tableNames []string) string {
 
 
 func TruncateTable(db *gorm.DB, tableNames ...string) error {
-	sqlStatements := make([]string, 0)
+	db.Exec("SET FOREIGN_KEY_CHECKS = 0")
+	defer db.Exec("SET FOREIGN_KEY_CHECKS = 1")
 	for _, tableName := range tableNames {
-		sqlStatements = append(sqlStatements, fmt.Sprintf("TRUNCATE TABLE %s;", tableName))
+		db.Exec(fmt.Sprintf("TRUNCATE TABLE %s;", tableName))
+		if nil != db.Error {
+			return db.Error
+		}
 	}
 
-	allSql := strings.Join(sqlStatements, " ")
-	db.Raw(allSql)
-	return db.Error
+	return nil
 }
 

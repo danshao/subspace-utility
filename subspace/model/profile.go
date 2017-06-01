@@ -23,8 +23,8 @@ type Profile struct {
 	IncomingBytes uint64 `json:"incoming_bytes" sql:"column:incoming_bytes; type: decimal(65,0) unsigned NOT NULL; default: '0'"`
 	OutgoingBytes uint64 `json:"outgoing_bytes" sql:"column:outgoing_bytes; type: decimal(65,0) unsigned NOT NULL; default: '0'"`
 
-	RevokedDate   time.Time `json:"revoked_date" sql:"column:revoked_date; type: datetime NOT NULL"`
-	LastLoginDate time.Time `json:"last_login_date" sql:"column:last_login_date; type: datetime NOT NULL"`
+	RevokedDate   *time.Time `json:"revoked_date" sql:"column:revoked_date; type: datetime NOT NULL"`
+	LastLoginDate *time.Time `json:"last_login_date" sql:"column:last_login_date; type: datetime NOT NULL"`
 	CreatedDate   time.Time `json:"created_date" sql:"column:created_date; type: datetime NOT NULL"`
 	UpdatedDate   time.Time `json:"updated_date" sql:"column:updated_date; type: datetime NOT NULL"`
 }

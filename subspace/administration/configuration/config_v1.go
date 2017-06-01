@@ -92,19 +92,19 @@ func (c ConfigV1) GetProfiles() []model.Profile {
 }
 
 func (c ConfigV1) Validate() error {
-	if utils.IsValidPreSharedKey(c.PreSharedKey) {
+	if !utils.IsValidPreSharedKey(c.PreSharedKey) {
 		return errors.New("Pre-shared key is invalid.")
 	}
 
-	if "" == c.VpnHost || utils.IsValidHost(c.VpnHost) {
+	if !("" == c.VpnHost || utils.IsValidHost(c.VpnHost)) {
 		return errors.New("Host is invalid.")
 	}
 
-	if "" == c.Ip || utils.IsValidIp(c.Ip) {
+	if !("" == c.Ip || utils.IsValidIp(c.Ip)) {
 		return errors.New("IP is invalid.")
 	}
 
-	if "" == c.Uuid || utils.IsValidUuidV4(c.Uuid) {
+	if !("" == c.Uuid || utils.IsValidUuidV4(c.Uuid)) {
 		return errors.New("UUID is not valid.")
 	}
 

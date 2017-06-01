@@ -49,9 +49,9 @@ type Account struct {
 	RawNote        string //Note
 	Note           string
 	LoginCount     uint
-	ExpireTime     time.Time // softether config expire time
-	RevokedTime    time.Time // Database revoked_date - 1day = ExpireTime
-	LastLoginTime  time.Time
+	ExpireTime     *time.Time // softether config expire time
+	RevokedTime    *time.Time // Database revoked_date - 1day = ExpireTime
+	LastLoginTime  *time.Time
 	UpdatedTime    time.Time
 	CreatedTime    time.Time
 }
@@ -99,23 +99,28 @@ func (ac Account) GetNote() string {
 }
 
 func (ac Account) GetCreatedTimeInMilliseconds() int64 {
-	return utils.ToUnixTimestampInMillisecond(ac.CreatedTime)
+	return utils.ToUnixTimestampInMillisecond(&ac.CreatedTime)
 }
 
 func (ac Account) GetUpdatedTime() int64 {
-	return utils.ToUnixTimestampInMillisecond(ac.UpdatedTime)
+	return utils.ToUnixTimestampInMillisecond(&ac.UpdatedTime)
 }
 
 func (ac Account) GetExpireTime() int64 {
-	if !ac.ExpireTime.IsZero() {
+	if nil != ac.ExpireTime {
 		return utils.ToUnixTimestampInMillisecond(ac.ExpireTime)
-	} else if !ac.RevokedTime.IsZero() {
-		return utils.ToUnixTimestampInMillisecond(ac.RevokedTime.AddDate(0, 0, -1))
+	} else if nil != ac.RevokedTime {
+		expireTime := time.Unix(ac.RevokedTime.Unix(), 0).AddDate(0, 0, -1)
+		return utils.ToUnixTimestampInMillisecond(&expireTime)
 	} else {
 		return 0
 	}
 }
 
 func (ac Account) GetLastLoginTime() int64 {
-	return utils.ToUnixTimestampInMillisecond(ac.LastLoginTime)
+	if nil != ac.LastLoginTime {
+		return utils.ToUnixTimestampInMillisecond(ac.LastLoginTime)
+	} else {
+		return 0
+	}
 }
