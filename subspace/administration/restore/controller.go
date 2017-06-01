@@ -209,6 +209,8 @@ func (controller *controller) run(path string) {
 		model.User{}.TableName(),
 		model.Profile{}.TableName(),
 		model.System{}.TableName(),
+		model.Log{}.TableName(),
+		model.ProfileSnapshot{}.TableName(),
 	); nil != err {
 		controller.onFail(err)
 		return

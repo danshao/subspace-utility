@@ -22,35 +22,35 @@ type ProfileV1 struct {
 	//IncomingBytes uint `yaml:"incoming_bytes"`
 	//OutgoingBytes uint `yaml:"outgoing_bytes"`
 
-	RevokedDate   time.Time `yaml:"revoked_date,omitempty"`
-	LastLoginDate time.Time `yaml:"lastLogin_date,omitempty"`
+	RevokedDate   *time.Time `yaml:"revoked_date,omitempty"`
+	LastLoginDate *time.Time `yaml:"lastLogin_date,omitempty"`
 	UpdatedDate   time.Time `yaml:"updated_date"`
 	CreatedDate   time.Time `yaml:"created_date"`
 }
 
 func (profile *ProfileV1) Validate() error {
-	if 0 < profile.Id {
-		return errors.New("Profile id must >= 0.")
+	if 0 >= profile.Id {
+		return errors.New("Profile id must > 0.")
 	}
 
-	if 0 < profile.UserId {
-		return errors.New("Profile belongs user id must >= 0.")
+	if 0 >= profile.UserId {
+		return errors.New("Profile belongs user id must > 0.")
 	}
 
-	if "" != profile.Hub {
+	if "" == profile.Hub {
 		return errors.New("Hub name cannot empty.")
 	}
 
-	if "" != profile.UserName {
+	if "" == profile.UserName {
 		return errors.New("Profile user name cannot empty.")
 	}
 
-	if "" != profile.PasswordHash {
+	if "" == profile.PasswordHash {
 		return errors.New("Profile password hash cannot empty.")
 	}
 
-	if 0 <= profile.LoginCount {
-		return errors.New("Profile login count cannot <= 0.")
+	if 0 > profile.LoginCount {
+		return errors.New("Profile login count must >= 0.")
 	}
 
 	if profile.CreatedDate.IsZero() {
