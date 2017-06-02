@@ -9,7 +9,6 @@ import (
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 	"errors"
 	"github.com/jinzhu/gorm"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 )
 
@@ -66,8 +65,8 @@ func (c ConfigV1) IsCheckSumMatch() bool {
 	return chkSum == original
 }
 
-func (c ConfigV1) IsValid() bool {
-	return nil == c.Validate()
+func (c ConfigV1) IsValid(db *gorm.DB) bool {
+	return nil == c.Validate(db)
 }
 
 func (c ConfigV1) GetSystem() model.System {
@@ -91,7 +90,7 @@ func (c ConfigV1) GetProfiles() []model.Profile {
 	return profiles
 }
 
-func (c ConfigV1) Validate() error {
+func (c ConfigV1) Validate(db *gorm.DB) error {
 	if !utils.IsValidPreSharedKey(c.PreSharedKey) {
 		return errors.New("Pre-shared key is invalid.")
 	}
@@ -106,13 +105,6 @@ func (c ConfigV1) Validate() error {
 
 	if !("" == c.Uuid || utils.IsValidUuidV4(c.Uuid)) {
 		return errors.New("UUID is not valid.")
-	}
-
-	// Validate users. Fetch accept enum values from database.
-	db, err := gorm.Open("mysql", config.GetDefaultMysqlUri())
-	defer db.Close()
-	if nil != err {
-		return errors.New("Cannot open database connection to get user role.")
 	}
 
 	roles, err := utils.GetAcceptableRoles(db, "users", "role")

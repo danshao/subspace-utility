@@ -184,7 +184,9 @@ func (controller *controller) run(path string) {
 	}
 
 	// Validate cfg
-	if err := cfg.Validate(); nil != err {
+	db, err := gorm.Open("mysql", controller.dbUri)
+	defer db.Close()
+	if err := cfg.Validate(db); nil != err {
 		controller.onFail(err)
 		return
 	}
@@ -197,8 +199,6 @@ func (controller *controller) run(path string) {
 	defer utils.StartServices(SERVICES)
 
 	// Restore DB data
-	db, err := gorm.Open("mysql", config.GetDefaultMysqlUri())
-	defer db.Close()
 	if nil != err {
 		controller.onFail(err)
 		return
