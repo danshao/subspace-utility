@@ -63,18 +63,29 @@ func generateConfigV1(dbUri string) (string, error) {
 
 func getSystem(db *gorm.DB) (model.System, error) {
 	systemData := model.System{}
-	funcName := ""
-	isV6, err := utils.IsIpV6(db, systemData.TableName(), "ip")
-	if nil != err {
-		return systemData, err
-	}
 
-	if isV6 {
-		funcName = "INET6_NTOA"
-	} else {
-		funcName = "INET_NTOA"
-	}
-	sql := fmt.Sprintf("SELECT `restriction`, `subspace_version`, `subspace_build_number`, `vpn_server_version`, `vpn_server_build_number`, %s(ip) AS `ip`, `ip_updated_date`, `host`, `host_updated_date`, `pre_shared_key`, `pre_shared_key_updated_date`, `uuid`, `uuid_updated_date`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `smtp_valid`, `user_schema_version`, `profile_schema_version`, `config_schema_version`, `updated_date`, `created_at` FROM %s", funcName, systemData.TableName())
+	sql := fmt.Sprintf("SELECT " +
+					"`restriction`, " +
+					"`subspace_version`, " +
+					"`subspace_build_number`, " +
+					"`vpn_server_version`, " +
+					"`vpn_server_build_number`, " +
+					"INET6_NTOA(ip) AS `ip`, " +
+					"`ip_updated_date`, `host`, " +
+					"`host_updated_date`, " +
+					"`pre_shared_key`, " +
+					"`pre_shared_key_updated_date`, " +
+					"`uuid`, `uuid_updated_date`, " +
+					"`smtp_host`, `smtp_port`, " +
+					"`smtp_username`, " +
+					"`smtp_password`, " +
+					"`smtp_valid`, " +
+					"`user_schema_version`, " +
+					"`profile_schema_version`, " +
+					"`config_schema_version`, " +
+					"`updated_date`, " +
+					"`created_at` " +
+					"FROM %s", systemData.TableName())
 	db.Raw(sql).Scan(&systemData)
 	if nil != db.Error {
 		return systemData, db.Error
