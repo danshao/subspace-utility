@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
+	"github.com/jinzhu/gorm"
 )
 
 type VersionedConfig interface {
@@ -11,8 +12,8 @@ type VersionedConfig interface {
 type SubspaceConfig interface {
 	CalculateCheckSum() string
 	IsCheckSumMatch() bool
-	IsValid() bool
-	Validate() error
+	IsValid(db *gorm.DB) bool
+	Validate(db *gorm.DB) error
 	GetSystem() model.System
 	GetUsers() []model.User
 	GetProfiles() []model.Profile
