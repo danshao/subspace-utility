@@ -14,13 +14,9 @@ type IpString struct {
 
 func GetReadableIp(db *gorm.DB, tableName string, columnName string) (string, error) {
 	ipString := IpString{}
-	db.Raw(fmt.Sprintf("SELECT INET6_NTOA(%s) AS ip FROM %s", columnName, tableName)).Scan(&ipString)
-	if nil != db.Error {
-		return "", db.Error
-	}
 
 	if "" == ipString.Ip {
-		db.Raw(fmt.Sprintf("SELECT INET_NTOA(%s) AS ip FROM %s", columnName, tableName)).Scan(&ipString)
+		db.Raw(fmt.Sprintf("SELECT INET6_NTOA(%s) AS ip FROM %s", columnName, tableName)).Scan(&ipString)
 		if nil != db.Error {
 			return "", db.Error
 		} else {
@@ -31,19 +27,31 @@ func GetReadableIp(db *gorm.DB, tableName string, columnName string) (string, er
 	}
 }
 
-func IsIpV6(db *gorm.DB, tableName string, columnName string) (bool, error) {
-	ipString := IpString{}
-	db.Raw(fmt.Sprintf("SELECT INET6_NTOA(%s) AS ip FROM %s", columnName, tableName)).Scan(&ipString)
+
+
+type IpResult struct {
+	Result bool
+}
+
+func IsIpV4(db *gorm.DB, tableName string, columnName string) (bool, error) {
+	result := IpResult{}
+	db.Raw(fmt.Sprintf("SELECT IS_IPV4(INET6_NTOA(%s)) AS `result` FROM %s", columnName, tableName)).Scan(&result)
 	if nil != db.Error {
 		return false, db.Error
 	}
-
-	if "" == ipString.Ip {
-		return false, nil
-	} else {
-		return true, nil
-	}
+	return result.Result, nil
 }
+
+func IsIpV6(db *gorm.DB, tableName string, columnName string) (bool, error) {
+	result := IpResult{}
+	db.Raw(fmt.Sprintf("SELECT IS_IPV6(INET6_NTOA(%s)) AS `result` FROM %s", columnName, tableName)).Scan(&result)
+	if nil != db.Error {
+		return false, db.Error
+	}
+	return result.Result, nil
+}
+
+
 
 type EnumResult struct {
 	Type string `gorm:"column:Type"`
