@@ -12,6 +12,7 @@ func ToConfigV1(system model.System, users []UserV1, profiles []ProfileV1) Confi
 	return ConfigV1{
 		ConfigSchemaVersion:             system.ConfigSchemaVersion,
 		CreatedTime:                     time.Now(),
+		InstanceId:                      system.InstanceId,
 		SubspaceVersion:                 system.SubspaceVersion,
 		SubspaceBuildNumber:             system.SubspaceBuildNumber,
 		VpnServerVersion:                system.VpnServerVersion,
@@ -40,6 +41,7 @@ func ToConfigV1(system model.System, users []UserV1, profiles []ProfileV1) Confi
 func ParseSystemFromConfigV1(c ConfigV1) model.System {
 	return model.System{
 		Restriction:                     "",
+		InstanceId:                      c.InstanceId,
 		SubspaceVersion:                 c.SubspaceVersion,
 		SubspaceBuildNumber:             c.SubspaceBuildNumber,
 		VpnServerVersion:                c.VpnServerVersion,

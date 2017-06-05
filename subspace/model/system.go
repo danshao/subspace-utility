@@ -6,6 +6,7 @@ import (
 
 type System struct {
 	Restriction                     string      `gorm:"column:restriction"`
+	InstanceId                      string      `gorm:"column:instance_id"`
 	SubspaceVersion                 string      `gorm:"column:subspace_version"`
 	SubspaceBuildNumber             uint        `gorm:"column:subspace_build_number"`
 	VpnServerVersion                string      `gorm:"column:vpn_server_version"`

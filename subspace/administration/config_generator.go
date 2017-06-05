@@ -66,10 +66,14 @@ func getSystem(db *gorm.DB) (model.System, error) {
 
 	sql := fmt.Sprintf("SELECT " +
 					"`restriction`, " +
+					"`instance_id`, " +
 					"`subspace_version`, " +
 					"`subspace_build_number`, " +
 					"`vpn_server_version`, " +
 					"`vpn_server_build_number`, " +
+					"`vpn_server_administration_password`, " +
+					"`vpn_server_administration_port`, " +
+					"`vpn_hub_name`, " +
 					"INET6_NTOA(ip) AS `ip`, " +
 					"`ip_updated_date`, `host`, " +
 					"`host_updated_date`, " +
