@@ -24,11 +24,14 @@ type ConfigV1 struct {
 	PreSharedKey        string       `yaml:"pre_shared_key"`
 	CheckSum            string       `yaml:"check_sum"`
 
-	SmtpHost     string              `yaml:"smtp_host"`
-	SmtpPort     uint                `yaml:"smtp_port"`
-	SmtpUsername string              `yaml:"smtp_username"`
-	SmtpPassword string              `yaml:"smtp_password"`
-	SmtpValid    bool                `yaml:"smtp_valid"`
+	SmtpHost           string        `yaml:"smtp_host"`
+	SmtpPort           uint          `yaml:"smtp_port"`
+	SmtpAuthentication bool          `yaml:"smtp_authentication"`
+	SmtpUsername       string        `yaml:"smtp_username"`
+	SmtpPassword       string        `yaml:"smtp_password"`
+	SmtpValid          bool          `yaml:"smtp_valid"`
+	SmtpSenderName     string        `yaml:"smtp_sender_name"`
+	SmtpSenderEmail    string        `yaml:"smtp_sender_email"`
 
 	SubspaceVersion     string       `yaml:"subspace_version"`
 	SubspaceBuildNumber uint         `yaml:"subspace_build_number"`

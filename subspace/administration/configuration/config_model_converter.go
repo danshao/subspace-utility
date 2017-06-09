@@ -26,9 +26,12 @@ func ToConfigV1(system model.System, users []UserV1, profiles []ProfileV1) Confi
 		Uuid:                            system.Uuid,
 		SmtpHost:                        system.SmtpHost,
 		SmtpPort:                        system.SmtpPort,
+		SmtpAuthentication:              system.SmtpAuthentication,
 		SmtpUsername:                    system.SmtpUsername,
 		SmtpPassword:                    system.SmtpPassword,
 		SmtpValid:                       system.SmtpValid,
+		SmtpSenderName:                  system.SmtpSenderName,
+		SmtpSenderEmail:                 system.SmtpSenderEmail,
 
 		UserSchemaVersion: system.UserSchemaVersion,
 		Users:             users,

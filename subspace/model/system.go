@@ -24,9 +24,12 @@ type System struct {
 	UuidUpdatedDate                 *time.Time  `gorm:"column:uuid_updated_date"`
 	SmtpHost                        string      `gorm:"column:smtp_host"`
 	SmtpPort                        uint        `gorm:"column:smtp_port"`
+	SmtpAuthentication              bool        `gorm:"column:smtp_authentication"`
 	SmtpUsername                    string      `gorm:"column:smtp_username"`
 	SmtpPassword                    string      `gorm:"column:smtp_password"`
 	SmtpValid                       bool        `gorm:"column:smtp_valid"`
+	SmtpSenderName                  string      `gorm:"column:smtp_sender_name"`
+	SmtpSenderEmail                 string      `gorm:"column:smtp_sender_email"`
 	UserSchemaVersion               uint        `gorm:"column:user_schema_version"`
 	ProfileSchemaVersion            uint        `gorm:"column:profile_schema_version"`
 	ConfigSchemaVersion             uint        `gorm:"column:config_schema_version"`
@@ -65,8 +68,11 @@ func (sys System) DataToRestore() map[string]interface{} {
 		"uuid_updated_date":           now,
 		"smtp_host":                   sys.SmtpHost,
 		"smtp_port":                   sys.SmtpPort,
+		"smtp_authentication":         sys.SmtpAuthentication,
 		"smtp_username":               sys.SmtpUsername,
 		"smtp_password":               sys.SmtpPassword,
 		"smtp_valid":                  sys.SmtpValid,
+		"smtp_sender_name":            sys.SmtpSenderName,
+		"smtp_sender_email":           sys.SmtpSenderEmail,
 	}
 }

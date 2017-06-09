@@ -80,10 +80,14 @@ func getSystem(db *gorm.DB) (model.System, error) {
 					"`pre_shared_key`, " +
 					"`pre_shared_key_updated_date`, " +
 					"`uuid`, `uuid_updated_date`, " +
-					"`smtp_host`, `smtp_port`, " +
+					"`smtp_host`, " +
+					"`smtp_port`, " +
+					"`smtp_authentication`, " +
 					"`smtp_username`, " +
 					"`smtp_password`, " +
 					"`smtp_valid`, " +
+					"`smtp_sender_name`, " +
+					"`smtp_sender_email`, " +
 					"`user_schema_version`, " +
 					"`profile_schema_version`, " +
 					"`config_schema_version`, " +
