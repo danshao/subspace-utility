@@ -57,7 +57,7 @@ func (c ConfigV1) CalculateCheckSum() string {
 	c.CheckSum = ""
 	var buffer bytes.Buffer
 	binary.Write(&buffer, binary.BigEndian, []byte(SALT))
-	binary.Write(&buffer, binary.BigEndian, c)
+	binary.Write(&buffer, binary.BigEndian, []byte(fmt.Sprintf("%v", c)))
 	sum := fmt.Sprintf("% x", sha1.Sum(buffer.Bytes()))
 	return sum
 }
