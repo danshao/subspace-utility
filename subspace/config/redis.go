@@ -5,8 +5,11 @@ import (
 )
 
 const (
-	REDIS_DEFAULT_HOST      = "localhost"
-	REDIS_SESSIONS_DB       = 1
+	REDIS_DEFAULT_HOST        = "localhost"
+	REDIS_VPN_SESSIONS_DB     = 1
+	REDIS_WEB_SESSION_DB      = 2
+	REDIS_ACCOUNTS_DB         = 3
+	REDIS_BACKUP_SNAPSHOTS_DB = 4
 )
 
 func GetDefaultRedisUri() string {

@@ -5,7 +5,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 )
 
 var instance *controller
@@ -74,7 +73,7 @@ func (controller *controller) RemoveCallback(callback Callback) {
 	controller.callback = nil
 }
 
-func (controller *controller) Start(path string) (success bool) {
+func (controller *controller) Start() (success bool) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
@@ -90,7 +89,7 @@ func (controller *controller) Start(path string) (success bool) {
 	controller.running = true
 	controller.onStart()
 
-	go controller.run(path)
+	go controller.run()
 	return true
 }
 
@@ -135,7 +134,7 @@ func (controller *controller) IsCanceled() bool {
 	return controller.canceled
 }
 
-func (controller *controller) run(path string) {
+func (controller *controller) run() {
 	defer controller.cleanup()
 
 	if controller.canceled {
@@ -151,11 +150,6 @@ func (controller *controller) run(path string) {
 
 	if controller.canceled {
 		controller.onCancel()
-		return
-	}
-
-	if e := utils.WriteToFile(path, data); nil != e {
-		controller.onFail(e)
 		return
 	}
 

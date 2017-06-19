@@ -5,6 +5,7 @@ import (
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration/backup"
 	"time"
 	"testing"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 )
 
 const BACKUP_PATH = "/tmp/subspace.config"
@@ -20,7 +21,12 @@ func (c MyBackupCallback) OnCancel() {
 }
 
 func (c MyBackupCallback) OnSuccess(yaml string) {
-	fmt.Println("backup OnSuccess to", BACKUP_PATH)
+	fmt.Println("backup OnSuccess")
+	if e := utils.WriteToFile(BACKUP_PATH, yaml); nil != e {
+		fmt.Println("Write to", BACKUP_PATH, "fail.")
+	} else {
+		fmt.Println("Write to", BACKUP_PATH, "success.")
+	}
 }
 
 func (c MyBackupCallback) OnFail(e error) {
@@ -30,7 +36,7 @@ func (c MyBackupCallback) OnFail(e error) {
 func TestBackup(*testing.T) {
 	backupController := backup.GetInstance()
 	backupController.SetCallback(MyBackupCallback{})  // Not necessary
-	backupController.Start(BACKUP_PATH)
+	backupController.Start()
 	
 	ticker := time.NewTicker(time.Millisecond * 200)
 	for t := range ticker.C {
