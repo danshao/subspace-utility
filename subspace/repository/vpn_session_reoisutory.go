@@ -16,6 +16,7 @@ import (
 	"github.com/go-redis/redis"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 	"time"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 )
 
 type SessionRepository interface {
@@ -32,9 +33,21 @@ type RedisSessionRepository struct {
 	Client *redis.Client
 }
 
+func InitSessionRepositoryWithHost(host string) (repo SessionRepository) {
+	client := redis.NewClient(&redis.Options{
+		Addr:     config.FormatRedisUri(host),
+		Password: "",                       // no password set
+		DB:       config.REDIS_VPN_SESSIONS_DB, // use default DB
+	})
+	return RedisSessionRepository{
+		Hub: config.DEFAULT_HUB_NAME,
+		Client: client,
+	}
+}
+
 const REDIS_TIME_TO_LIVE = 30 * time.Second
 
-func (repo *RedisSessionRepository) PutAllSessionIfNotExist(dataSet []*model.Session) (err error) {
+func (repo RedisSessionRepository) PutAllSessionIfNotExist(dataSet []*model.Session) (err error) {
 	pipe := repo.Client.TxPipeline()
 	for _, value := range dataSet {
 		redisKey := fmt.Sprintf("sessions:%s:%s", value.Hub, value.UserNameAuthentication)
@@ -58,7 +71,7 @@ func (repo *RedisSessionRepository) PutAllSessionIfNotExist(dataSet []*model.Ses
 	return
 }
 
-func (repo *RedisSessionRepository) ClearAndPutAllSession(dataSet []*model.Session) (err error) {
+func (repo RedisSessionRepository) ClearAndPutAllSession(dataSet []*model.Session) (err error) {
 	pipe := repo.Client.TxPipeline()
 	pipe.FlushDB()
 	for _, value := range dataSet {
@@ -82,19 +95,19 @@ func (repo *RedisSessionRepository) ClearAndPutAllSession(dataSet []*model.Sessi
 	return
 }
 
-func (repo *RedisSessionRepository) GetAllSessions() (results []model.Session, err error) {
+func (repo RedisSessionRepository) GetAllSessions() (results []model.Session, err error) {
 	return repo.ScanSessions(fmt.Sprintf("sessions:%s:*", repo.Hub))
 }
 
-func (repo *RedisSessionRepository) GetSessionsByUserId(userId int) (results []model.Session, err error) {
+func (repo RedisSessionRepository) GetSessionsByUserId(userId int) (results []model.Session, err error) {
 	return repo.ScanSessions(fmt.Sprintf("sessions:%s:%d_*", repo.Hub, userId))
 }
 
-func (repo *RedisSessionRepository) GetSessionsByProfileUserName(userName string) (results []model.Session, err error) {
+func (repo RedisSessionRepository) GetSessionsByProfileUserName(userName string) (results []model.Session, err error) {
 	return repo.GetSessionsByKey(fmt.Sprintf("sessions:%s:%s", repo.Hub, userName))
 }
 
-func (repo *RedisSessionRepository) ScanSessions(pattern string) (results []model.Session, err error) {
+func (repo RedisSessionRepository) ScanSessions(pattern string) (results []model.Session, err error) {
 	page, _, err := repo.Client.Scan(0, pattern, 10000).Result()
 	if nil != err {
 		fmt.Println("Scan sessions from redis fail for pattern:", pattern)
@@ -113,7 +126,7 @@ func (repo *RedisSessionRepository) ScanSessions(pattern string) (results []mode
 
 }
 
-func (repo *RedisSessionRepository) GetSessionsByKey(key string) (results []model.Session, err error) {
+func (repo RedisSessionRepository) GetSessionsByKey(key string) (results []model.Session, err error) {
 	results = make([]model.Session, 0)
 	values, err := repo.Client.HVals(key).Result()
 
@@ -132,6 +145,6 @@ func (repo *RedisSessionRepository) GetSessionsByKey(key string) (results []mode
 	return results, nil
 }
 
-func (repo *RedisSessionRepository) ClearSession() (err error) {
+func (repo RedisSessionRepository) ClearSession() (err error) {
 	return repo.Client.FlushDb().Err()
 }
