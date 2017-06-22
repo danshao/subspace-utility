@@ -2,22 +2,14 @@ package main
 
 import (
 	"testing"
-	"github.com/go-redis/redis"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/repository"
 	"time"
 )
 
 func TestRedisVpnAccountRepository(t *testing.T) {
-	client := redis.NewClient(&redis.Options{
-		Addr:     config.FormatRedisUri(config.TEST_HOST),
-		Password: "",                       // no password set
-		DB:       config.REDIS_ACCOUNTS_DB, // use default DB
-	})
+	repo := repository.InitVpnAccountRepositoryWithHost(config.TEST_HOST)
 
-	repo := repository.RedisVpnAccountRepository{
-		Client: client,
-	}
 	account := "1_1497421288354092850"
 	password := "q4zRV248IT"
 	err := repo.SetAccountCache(account, password)

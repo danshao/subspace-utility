@@ -20,10 +20,18 @@ type MysqlProfileRepository struct {
 	Account string
 	Password string
 	DatabaseName string
-
 }
 
-func (repo *MysqlProfileRepository) UpdateBatch(dataSet []*model.ProfileSnapshot) (err error) {
+func InitProfileRepositoryWithHost(host string) (repo ProfileRepository) {
+	return MysqlProfileRepository{
+		Host: host,
+		Account: config.MYSQL_DEFAULT_ACCOUNT,
+		Password: config.MYSQL_DEFAULT_PASSWORD,
+		DatabaseName: config.MYSQL_DEFAULT_DATABASE,
+	}
+}
+
+func (repo MysqlProfileRepository) UpdateBatch(dataSet []*model.ProfileSnapshot) (err error) {
 	uri := fmt.Sprintf(config.MYSQL_URI_FORMAT,
 		repo.Account,
 		repo.Password,
@@ -52,7 +60,7 @@ func (repo *MysqlProfileRepository) UpdateBatch(dataSet []*model.ProfileSnapshot
 	return err
 }
 
-func (repo *MysqlProfileRepository) Update(row *model.ProfileSnapshot) (err error) {
+func (repo MysqlProfileRepository) Update(row *model.ProfileSnapshot) (err error) {
 	uri := fmt.Sprintf(config.MYSQL_URI_FORMAT,
 		repo.Account,
 		repo.Password,
