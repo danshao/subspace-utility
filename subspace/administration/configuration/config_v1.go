@@ -49,8 +49,12 @@ type ConfigV1 struct {
 	Profiles             []ProfileV1 `yaml:"profiles"`
 }
 
-func (c *ConfigV1) GetConfigSchemaVersion() uint {
+func (c ConfigV1) GetConfigSchemaVersion() uint {
 	return c.ConfigSchemaVersion
+}
+
+func (c ConfigV1) GetConfigCreateTime() time.Time {
+	return c.CreatedTime
 }
 
 func (c ConfigV1) CalculateCheckSum() string {
