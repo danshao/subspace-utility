@@ -162,26 +162,26 @@ func (controller *controller) cleanup() {
 
 func (controller *controller) onStart() {
 	if nil != controller.callback {
-		go controller.callback.OnStart()
+		controller.callback.OnStart()
 	}
 }
 
 func (controller *controller) onCancel() {
 	if nil != controller.callback {
-		go controller.callback.OnCancel()
+		controller.callback.OnCancel()
 	}
 }
 
 func (controller *controller) onSuccess(result string) {
 	controller.result = result
 	if nil != controller.callback {
-		go controller.callback.OnSuccess(result)
+		controller.callback.OnSuccess(result)
 	}
 }
 
 func (controller *controller) onFail(e error) {
 	controller.err = e
 	if nil != controller.callback {
-		go controller.callback.OnFail(e)
+		controller.callback.OnFail(e)
 	}
 }
