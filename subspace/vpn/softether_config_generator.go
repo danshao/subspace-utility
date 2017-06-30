@@ -100,7 +100,7 @@ const TEMPLATE_SERVER =
  "	{\n" +
  "		declare Listener0\n" +
  "		{\n" +
- "			bool DisableDos false\n" +
+ "			bool DisableDos true\n" +
  "			bool Enabled true\n" +
  "			uint Port {{.GetDefaultAdministrationPort}}\n" +
  "		}\n" +
