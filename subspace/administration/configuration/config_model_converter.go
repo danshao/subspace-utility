@@ -63,6 +63,15 @@ func ParseSystemFromConfigV1(c ConfigV1) model.System {
 		ConfigSchemaVersion:  c.ConfigSchemaVersion,
 		UserSchemaVersion:    c.UserSchemaVersion,
 		ProfileSchemaVersion: c.ProfileSchemaVersion,
+
+		SmtpHost: c.SmtpHost,
+		SmtpPort: c.SmtpPort,
+		SmtpValid: false,
+		SmtpSenderEmail: c.SmtpSenderEmail,
+		SmtpSenderName: c.SmtpSenderName,
+		SmtpAuthentication: c.SmtpAuthentication,
+		SmtpUsername: c.SmtpUsername,
+		SmtpPassword: c.SmtpPassword,
 		//UpdatedDate: c.UpdatedDate,
 		//CreatedAt: c.CreatedAt,
 	}
