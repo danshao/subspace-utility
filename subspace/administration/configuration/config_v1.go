@@ -10,6 +10,7 @@ import (
 	"errors"
 	"github.com/jinzhu/gorm"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils/validator"
 )
 
 const SALT = "5ubSp4ce@EcoworkInc"
@@ -98,19 +99,19 @@ func (c ConfigV1) GetProfiles() []model.Profile {
 }
 
 func (c ConfigV1) Validate(db *gorm.DB) error {
-	if !utils.IsValidPreSharedKey(c.PreSharedKey) {
+	if !validator.IsValidPreSharedKey(c.PreSharedKey) {
 		return errors.New("Pre-shared key is invalid.")
 	}
 
-	if !("" == c.VpnHost || utils.IsValidHost(c.VpnHost)) {
+	if !("" == c.VpnHost || validator.IsValidHost(c.VpnHost)) {
 		return errors.New("Host is invalid.")
 	}
 
-	if !("" == c.Ip || utils.IsValidIp(c.Ip)) {
+	if !("" == c.Ip || validator.IsValidIp(c.Ip)) {
 		return errors.New("IP is invalid.")
 	}
 
-	if !("" == c.Uuid || utils.IsValidUuidV4(c.Uuid)) {
+	if !("" == c.Uuid || validator.IsValidUuidV4(c.Uuid)) {
 		return errors.New("UUID is not valid.")
 	}
 

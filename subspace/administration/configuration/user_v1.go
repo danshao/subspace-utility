@@ -2,9 +2,9 @@ package configuration
 
 import (
 	"time"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 	"errors"
 	"fmt"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils/validator"
 )
 
 type UserV1 struct {
@@ -28,11 +28,11 @@ func (user *UserV1) Validate(acceptRoles []string) error {
 		return errors.New("User id must > 0.")
 	}
 
-	if !utils.IsValidEmailFormat(user.Email) {
+	if !validator.IsValidEmail(user.Email) {
 		return errors.New("Email is invalid.")
 	}
 
-	if !utils.IsStringInArray(user.Role, acceptRoles) {
+	if !validator.IsStringInArray(user.Role, acceptRoles) {
 		return errors.New(fmt.Sprintf("Role is not in %v.", acceptRoles))
 	}
 
