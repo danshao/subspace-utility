@@ -43,9 +43,9 @@ type Status struct {
 
 // Define service start sequence. Service monit should be started at the end.
 var SERVICES = []string{
+	"vpnserver",
 	"vpnsession",
 	"vpnprofile",
-	"vpnserver",
 	"monit",
 }
 
