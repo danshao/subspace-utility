@@ -1,26 +1,26 @@
 package configuration
 
 import (
-	"time"
 	"errors"
 	"fmt"
+	"time"
+
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils/validator"
 )
 
 type UserV1 struct {
-	Id               uint   `yaml:"id"`
-	Email            string `yaml:"email"`
-	Alias            string `yaml:"alias"`
-	Role             string `yaml:"role"`
-	EmailVerified    bool   `yaml:"email_verified"`
-	Enabled          bool   `yaml:"enabled"`
-	PasswordHash     string `yaml:"password_hash"`
-	SetPasswordToken string `yaml:"set_password_token"`
-
-	RevokedDate   *time.Time `yaml:"revoked_date,omitempty"`
-	LastLoginDate *time.Time `yaml:"last_login_date,omitempty"`
-	UpdatedDate   time.Time `yaml:"updated_date"`
-	CreatedDate   time.Time `yaml:"created_date"`
+	Id               uint       `yaml:"id"`
+	Email            string     `yaml:"email"`
+	Alias            string     `yaml:"alias"`
+	Role             string     `yaml:"role"`
+	EmailVerified    bool       `yaml:"email_verified"`
+	Enabled          bool       `yaml:"enabled"`
+	PasswordHash     string     `yaml:"password_hash"`
+	SetPasswordToken string     `yaml:"set_password_token"`
+	RevokedDate      *time.Time `yaml:"revoked_date,omitempty"`
+	LastLoginDate    *time.Time `yaml:"last_login_date,omitempty"`
+	UpdatedDate      time.Time  `yaml:"updated_date"`
+	CreatedDate      time.Time  `yaml:"created_date"`
 }
 
 func (user *UserV1) Validate(acceptRoles []string) error {

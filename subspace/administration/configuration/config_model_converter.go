@@ -1,14 +1,15 @@
 package configuration
 
 import (
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 	"time"
+
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 )
 
 /**
-	Convert System
+ *Convert System
  */
-func ToConfigV1(system model.System, users []UserV1, profiles []ProfileV1) ConfigV1 {
+func ToConfigV1(system model.System, users []UserV1, profiles []ProfileV1, policies []PolicyV1, policyRules []PolicyRuleV1, profilesPolicies []ProfilesPolicyV1) ConfigV1 {
 	return ConfigV1{
 		ConfigSchemaVersion:             system.ConfigSchemaVersion,
 		CreatedTime:                     time.Now(),
@@ -38,6 +39,10 @@ func ToConfigV1(system model.System, users []UserV1, profiles []ProfileV1) Confi
 
 		ProfileSchemaVersion: system.ProfileSchemaVersion,
 		Profiles:             profiles,
+
+		Policies:         policies,
+		PolicyRules:      policyRules,
+		ProfilesPolicies: profilesPolicies,
 	}
 }
 
@@ -64,21 +69,21 @@ func ParseSystemFromConfigV1(c ConfigV1) model.System {
 		UserSchemaVersion:    c.UserSchemaVersion,
 		ProfileSchemaVersion: c.ProfileSchemaVersion,
 
-		SmtpHost: c.SmtpHost,
-		SmtpPort: c.SmtpPort,
-		SmtpValid: false,
-		SmtpSenderEmail: c.SmtpSenderEmail,
-		SmtpSenderName: c.SmtpSenderName,
+		SmtpHost:           c.SmtpHost,
+		SmtpPort:           c.SmtpPort,
+		SmtpValid:          false,
+		SmtpSenderEmail:    c.SmtpSenderEmail,
+		SmtpSenderName:     c.SmtpSenderName,
 		SmtpAuthentication: c.SmtpAuthentication,
-		SmtpUsername: c.SmtpUsername,
-		SmtpPassword: c.SmtpPassword,
+		SmtpUsername:       c.SmtpUsername,
+		SmtpPassword:       c.SmtpPassword,
 		//UpdatedDate: c.UpdatedDate,
 		//CreatedAt: c.CreatedAt,
 	}
 }
 
 /**
-	Convert User
+ * Convert User
  */
 func ParseUserV1(u UserV1) model.User {
 	user := model.User{
@@ -119,7 +124,7 @@ func ToUserV1(u model.User) UserV1 {
 }
 
 /**
-	Convert profile
+ * Convert profile
  */
 func ToProfileV1(p model.Profile) ProfileV1 {
 	profileV1 := ProfileV1{
@@ -172,4 +177,83 @@ func ParseProfileV1(p ProfileV1) model.Profile {
 		CreatedDate:   p.CreatedDate,
 	}
 	return profile
+}
+
+/**
+ * Convert Policy
+ */
+func ParsePolicyV1(u PolicyV1) model.Policy {
+	policy := model.Policy{
+		Id:          u.Id,
+		Name:        u.Name,
+		Description: u.Description,
+		UpdatedDate: u.UpdatedDate,
+		CreatedDate: u.CreatedDate,
+	}
+	return policy
+}
+
+func ToPolicyV1(u model.Policy) PolicyV1 {
+	policyV1 := PolicyV1{
+		Id:          u.Id,
+		Name:        u.Name,
+		Description: u.Description,
+		UpdatedDate: u.UpdatedDate,
+		CreatedDate: u.CreatedDate,
+	}
+	return policyV1
+}
+
+/**
+ * Convert PolicyRule
+ */
+func ParsePolicyRuleV1(u PolicyRuleV1) model.PolicyRule {
+	policyRule := model.PolicyRule{
+		Id:                u.Id,
+		PolicyId:          u.PolicyId,
+		Priority:          u.Priority,
+		TargetDestination: u.TargetDestination,
+		Action:            u.Action,
+		UpdatedDate:       u.UpdatedDate,
+		CreatedDate:       u.CreatedDate,
+	}
+	return policyRule
+}
+
+func ToPolicyRuleV1(u model.PolicyRule) PolicyRuleV1 {
+	policyRuleV1 := PolicyRuleV1{
+		Id:                u.Id,
+		PolicyId:          u.PolicyId,
+		Priority:          u.Priority,
+		TargetDestination: u.TargetDestination,
+		Action:            u.Action,
+		UpdatedDate:       u.UpdatedDate,
+		CreatedDate:       u.CreatedDate,
+	}
+	return policyRuleV1
+}
+
+/**
+ * Convert ProfilesPolicy
+ */
+func ParseProfilesPolicyV1(u ProfilesPolicyV1) model.ProfilesPolicy {
+	profilesPolicy := model.ProfilesPolicy{
+		Id:          u.Id,
+		ProfileId:   u.ProfileId,
+		PolicyId:    u.PolicyId,
+		UpdatedDate: u.UpdatedDate,
+		CreatedDate: u.CreatedDate,
+	}
+	return profilesPolicy
+}
+
+func ToProfilesPolicyV1(u model.ProfilesPolicy) ProfilesPolicyV1 {
+	profilesPolicyV1 := ProfilesPolicyV1{
+		Id:          u.Id,
+		ProfileId:   u.ProfileId,
+		PolicyId:    u.PolicyId,
+		UpdatedDate: u.UpdatedDate,
+		CreatedDate: u.CreatedDate,
+	}
+	return profilesPolicyV1
 }

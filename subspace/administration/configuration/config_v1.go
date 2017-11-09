@@ -1,53 +1,58 @@
 package configuration
 
 import (
-	"time"
-	"crypto/sha1"
 	"bytes"
+	"crypto/sha1"
 	"encoding/binary"
-	"fmt"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 	"errors"
+	"fmt"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils/validator"
 )
 
 const SALT = "5ubSp4ce@EcoworkInc"
 
 type ConfigV1 struct {
-	ConfigSchemaVersion uint         `yaml:"config_schema_version"`
-	CreatedTime         time.Time    `yaml:"created_time"`
-	InstanceId          string       `yaml:"instance_id"`
-	Uuid                string       `yaml:"uuid"`
-	VpnHost             string       `yaml:"vpn_host"`
-	Ip                  string       `yaml:"ip"`
-	PreSharedKey        string       `yaml:"pre_shared_key"`
-	CheckSum            string       `yaml:"check_sum"`
+	ConfigSchemaVersion uint      `yaml:"config_schema_version"`
+	CreatedTime         time.Time `yaml:"created_time"`
+	InstanceId          string    `yaml:"instance_id"`
+	Uuid                string    `yaml:"uuid"`
+	VpnHost             string    `yaml:"vpn_host"`
+	Ip                  string    `yaml:"ip"`
+	PreSharedKey        string    `yaml:"pre_shared_key"`
+	CheckSum            string    `yaml:"check_sum"`
 
-	SmtpHost           string        `yaml:"smtp_host"`
-	SmtpPort           uint          `yaml:"smtp_port"`
-	SmtpAuthentication bool          `yaml:"smtp_authentication"`
-	SmtpUsername       string        `yaml:"smtp_username"`
-	SmtpPassword       string        `yaml:"smtp_password"`
-	SmtpValid          bool          `yaml:"smtp_valid"`
-	SmtpSenderName     string        `yaml:"smtp_sender_name"`
-	SmtpSenderEmail    string        `yaml:"smtp_sender_email"`
+	SmtpHost           string `yaml:"smtp_host"`
+	SmtpPort           uint   `yaml:"smtp_port"`
+	SmtpAuthentication bool   `yaml:"smtp_authentication"`
+	SmtpUsername       string `yaml:"smtp_username"`
+	SmtpPassword       string `yaml:"smtp_password"`
+	SmtpValid          bool   `yaml:"smtp_valid"`
+	SmtpSenderName     string `yaml:"smtp_sender_name"`
+	SmtpSenderEmail    string `yaml:"smtp_sender_email"`
 
-	SubspaceVersion     string       `yaml:"subspace_version"`
-	SubspaceBuildNumber uint         `yaml:"subspace_build_number"`
+	SubspaceVersion     string `yaml:"subspace_version"`
+	SubspaceBuildNumber uint   `yaml:"subspace_build_number"`
 
-	VpnServerVersion                string      `yaml:"vpn_server_version"`
-	VpnServerBuildNumber            uint        `yaml:"vpn_server_build_number"`
-	VpnServerAdministrationPassword string      `yaml:"vpn_server_administration_password"`
-	VpnServerAdministrationPort     uint        `yaml:"vpn_server_administration_port"`
-	VpnHubName                      string      `yaml:"vpn_hub_name"`
+	VpnServerVersion                string `yaml:"vpn_server_version"`
+	VpnServerBuildNumber            uint   `yaml:"vpn_server_build_number"`
+	VpnServerAdministrationPassword string `yaml:"vpn_server_administration_password"`
+	VpnServerAdministrationPort     uint   `yaml:"vpn_server_administration_port"`
+	VpnHubName                      string `yaml:"vpn_hub_name"`
 
-	UserSchemaVersion uint           `yaml:"user_schema_version"`
-	Users             []UserV1       `yaml:"users"`
+	UserSchemaVersion uint     `yaml:"user_schema_version"`
+	Users             []UserV1 `yaml:"users"`
 
 	ProfileSchemaVersion uint        `yaml:"profiles_schema_version"`
 	Profiles             []ProfileV1 `yaml:"profiles"`
+
+	Policies         []PolicyV1         `yaml:"policies"`
+	PolicyRules      []PolicyRuleV1     `yaml:"policy_rules"`
+	ProfilesPolicies []ProfilesPolicyV1 `yaml:"profiles_policies"`
 }
 
 func (c ConfigV1) GetConfigSchemaVersion() uint {

@@ -25,8 +25,8 @@ type Profile struct {
 
 	RevokedDate   *time.Time `json:"revoked_date" sql:"column:revoked_date; type: datetime NOT NULL"`
 	LastLoginDate *time.Time `json:"last_login_date" sql:"column:last_login_date; type: datetime NOT NULL"`
-	CreatedDate   time.Time `json:"created_date" sql:"column:created_date; type: datetime NOT NULL"`
-	UpdatedDate   time.Time `json:"updated_date" sql:"column:updated_date; type: datetime NOT NULL"`
+	CreatedDate   time.Time  `json:"created_date" sql:"column:created_date; type: datetime NOT NULL"`
+	UpdatedDate   time.Time  `json:"updated_date" sql:"column:updated_date; type: datetime NOT NULL"`
 }
 
 func (Profile) TableName() string {
