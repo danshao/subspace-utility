@@ -28,8 +28,8 @@ func generateConfigV1(dbUri string) (string, error) {
 		model.Profile{}.TableName(),
 		model.System{}.TableName(),
 		model.Policy{}.TableName(),
-		model.ProfilesPolicy{}.TableName(),
 		model.PolicyRule{}.TableName(),
+		model.ProfilesPolicy{}.TableName(),
 	)
 	defer utils.UnlockTable(db)
 

@@ -6,15 +6,15 @@ import (
 )
 
 type PolicyV1 struct {
-	Id          uint      `yaml:"id"`
+	ID          uint      `yaml:"id"`
 	Name        string    `yaml:"name"`
 	Description string    `yaml:"description"`
-	UpdatedDate time.Time `yaml:"updated_date"`
-	CreatedDate time.Time `yaml:"created_date"`
+	UpdatedAt   time.Time `yaml:"updated_date"`
+	CreatedAt   time.Time `yaml:"created_date"`
 }
 
-func (policy *PolicyV1) Validate(acceptRoles []string) error {
-	if 0 >= policy.Id {
+func (policy *PolicyV1) Validate() error {
+	if 0 >= policy.ID {
 		return errors.New("User id must > 0.")
 	}
 
@@ -22,11 +22,11 @@ func (policy *PolicyV1) Validate(acceptRoles []string) error {
 		return errors.New("Name cannot be empty.")
 	}
 
-	if policy.CreatedDate.IsZero() {
+	if policy.CreatedAt.IsZero() {
 		return errors.New("CreateDate cannot be empty.")
 	}
 
-	if policy.UpdatedDate.IsZero() {
+	if policy.UpdatedAt.IsZero() {
 		return errors.New("UpdateDate cannot be empty.")
 	}
 

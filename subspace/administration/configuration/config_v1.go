@@ -103,6 +103,30 @@ func (c ConfigV1) GetProfiles() []model.Profile {
 	return profiles
 }
 
+func (c ConfigV1) GetPolicies() []model.Policy {
+	policies := make([]model.Policy, 0)
+	for _, p := range c.Policies {
+		policies = append(policies, ParsePolicyV1(p))
+	}
+	return policies
+}
+
+func (c ConfigV1) GetPolicyRules() []model.PolicyRule {
+	policyRules := make([]model.PolicyRule, 0)
+	for _, p := range c.PolicyRules {
+		policyRules = append(policyRules, ParsePolicyRuleV1(p))
+	}
+	return policyRules
+}
+
+func (c ConfigV1) GetProfilesPolicies() []model.ProfilesPolicy {
+	profilesPolicies := make([]model.ProfilesPolicy, 0)
+	for _, p := range c.ProfilesPolicies {
+		profilesPolicies = append(profilesPolicies, ParseProfilesPolicyV1(p))
+	}
+	return profilesPolicies
+}
+
 func (c ConfigV1) Validate(db *gorm.DB) error {
 	if !validator.IsValidPreSharedKey(c.PreSharedKey) {
 		return errors.New("Pre-shared key is invalid.")
@@ -134,6 +158,24 @@ func (c ConfigV1) Validate(db *gorm.DB) error {
 	// Validate profiles
 	for _, profile := range c.Profiles {
 		if err := profile.Validate(); nil != err {
+			return err
+		}
+	}
+
+	for _, policy := range c.Policies {
+		if err := policy.Validate(); nil != err {
+			return err
+		}
+	}
+
+	for _, policyRule := range c.PolicyRules {
+		if err := policyRule.Validate(); nil != err {
+			return err
+		}
+	}
+
+	for _, profilesPolicy := range c.ProfilesPolicies {
+		if err := profilesPolicy.Validate(); nil != err {
 			return err
 		}
 	}

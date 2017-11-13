@@ -1,13 +1,16 @@
 package restore
 
 import (
-	"sync"
 	"errors"
+	"sync"
+
+	"sort"
+
 	"github.com/jinzhu/gorm"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/vpn"
 )
 
@@ -26,7 +29,7 @@ type Callback interface {
 type Step int
 
 const (
-	IDLE      = iota
+	IDLE = iota
 	RUNNING
 	SUCCEED
 	FAILED
@@ -211,6 +214,9 @@ func (controller *controller) run(path string) {
 		model.System{}.TableName(),
 		model.Log{}.TableName(),
 		model.ProfileSnapshot{}.TableName(),
+		model.Policy{}.TableName(),
+		model.PolicyRule{}.TableName(),
+		model.ProfilesPolicy{}.TableName(),
 	); nil != err {
 		controller.onFail(err)
 		return
@@ -225,6 +231,9 @@ func (controller *controller) run(path string) {
 		// Usage data do NOT keep.
 		model.ProfileSnapshot{}.TableName(),
 		model.Log{}.TableName(),
+		model.Policy{}.TableName(),
+		model.PolicyRule{}.TableName(),
+		model.ProfilesPolicy{}.TableName(),
 	)
 
 	//TODO Check profile related user_id is exist or not.
@@ -246,14 +255,69 @@ func (controller *controller) run(path string) {
 		db.Table(profile.TableName()).Create(&profile)
 	}
 
+	// Insert Policy data
+	for _, policy := range cfg.GetPolicies() {
+		db.Table(policy.TableName()).Create(&policy)
+	}
+
+	// Insert PolicyRule data
+	for _, policyRule := range cfg.GetPolicyRules() {
+		db.Table(policyRule.TableName()).Create(&policyRule)
+	}
+
+	// Insert ProfilesPolicy data
+	for _, profilesPolicy := range cfg.GetProfilesPolicies() {
+		db.Table(profilesPolicy.TableName()).Create(&profilesPolicy)
+	}
+
+	// build softether access rules
+	accessRules := make([]vpn.AccessRule, 0)
+	profilesPolicies := []model.ProfilesPolicy{}
+	db.Preload("Profile").Preload("Policy.PolicyRules").Find(&profilesPolicies)
+	for _, profilesPolicy := range profilesPolicies {
+		profile := profilesPolicy.Profile
+		policy := profilesPolicy.Policy
+		policyRules := profilesPolicy.Policy.PolicyRules
+		for _, policyRule := range policyRules {
+			ipAddress, subnetmask := policyRule.ParseTargetDestination()
+			accessRules = append(accessRules, vpn.AccessRule{
+				DestIpAddress:  ipAddress,
+				DestSubnetMask: subnetmask,
+				Note:           policy.Description,
+				Discard:        policyRule.Action == "Deny",
+				Priority:       policyRule.Priority,
+				SrcUsername:    profile.UserName,
+			})
+		}
+	}
+	// 根據 Priority > Discard (false > true) > DestIpAddress > SrcUsername 進行排序
+	sort.Slice(accessRules, func(i, j int) bool {
+		if accessRules[i].Priority != accessRules[j].Priority {
+			return accessRules[i].Priority < accessRules[j].Priority
+		} else if accessRules[i].Discard != accessRules[j].Discard {
+			return !accessRules[i].Discard
+		} else if accessRules[i].DestIpAddress != accessRules[j].DestIpAddress {
+			return accessRules[i].DestIpAddress < accessRules[j].DestIpAddress
+		} else if accessRules[i].SrcUsername != accessRules[j].SrcUsername {
+			return accessRules[i].SrcUsername > accessRules[j].SrcUsername
+		} else {
+			return false
+		}
+	})
+	// 取得 Index
+	for i, _ := range accessRules {
+		accessRules[i].Index = i + 1
+	}
+
 	// Format softether cfg
 	vpnServer := vpn.Softether{
 		AdministrationPort: config.DEFAULT_VPN_SERVER_ADMINISTRATION_PORT,
-		AdminPassword: config.DEFAULT_VPN_SERVER_ADMINISTRATION_PASSWORD,
-		PreSharedKey: sys.PreSharedKey,
+		AdminPassword:      config.DEFAULT_VPN_SERVER_ADMINISTRATION_PASSWORD,
+		PreSharedKey:       sys.PreSharedKey,
 		Hub: vpn.Hub{
-			Name: config.DEFAULT_HUB_NAME,
-			Accounts: accounts,
+			Name:        config.DEFAULT_HUB_NAME,
+			Accounts:    accounts,
+			AccessRules: accessRules,
 		},
 	}
 	softetherConfig, err := vpn.GenerateSoftetherConfig(vpnServer)

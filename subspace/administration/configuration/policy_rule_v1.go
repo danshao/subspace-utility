@@ -6,21 +6,21 @@ import (
 )
 
 type PolicyRuleV1 struct {
-	Id                uint      `yaml:"id"`
-	PolicyId          uint      `yaml:"policy_id"`
+	ID                uint      `yaml:"id"`
+	PolicyID          uint      `yaml:"policy_id"`
 	Priority          uint      `yaml:"priority"`
 	TargetDestination string    `yaml:"target_destination"`
 	Action            string    `yaml:"action"`
-	UpdatedDate       time.Time `yaml:"updated_date"`
-	CreatedDate       time.Time `yaml:"created_date"`
+	UpdatedAt         time.Time `yaml:"updated_date"`
+	CreatedAt         time.Time `yaml:"created_date"`
 }
 
-func (policyRule *PolicyRuleV1) Validate(acceptRoles []string) error {
-	if 0 >= policyRule.Id {
+func (policyRule *PolicyRuleV1) Validate() error {
+	if 0 >= policyRule.ID {
 		return errors.New("User id must > 0.")
 	}
 
-	if 0 >= policyRule.PolicyId {
+	if 0 >= policyRule.PolicyID {
 		return errors.New("Profile id must > 0.")
 	}
 
@@ -36,11 +36,11 @@ func (policyRule *PolicyRuleV1) Validate(acceptRoles []string) error {
 		return errors.New("Action cannot be empty.")
 	}
 
-	if policyRule.CreatedDate.IsZero() {
+	if policyRule.CreatedAt.IsZero() {
 		return errors.New("CreateDate cannot be empty.")
 	}
 
-	if policyRule.UpdatedDate.IsZero() {
+	if policyRule.UpdatedAt.IsZero() {
 		return errors.New("UpdateDate cannot be empty.")
 	}
 

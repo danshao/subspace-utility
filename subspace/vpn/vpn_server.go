@@ -3,6 +3,7 @@ package vpn
 import (
 	"strings"
 	"time"
+
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 )
 
@@ -35,8 +36,9 @@ func (softether Softether) GetDefaultAdministrationPort() uint {
 }
 
 type Hub struct {
-	Name     string
-	Accounts []Account
+	Name        string
+	Accounts    []Account
+	AccessRules []AccessRule
 }
 
 type Account struct {
@@ -60,7 +62,7 @@ type Account struct {
 Softether concat password and uppercase username as password hash.
 If username is "Username" and password is "Password" than hash will be:
 $ echo -n "PasswordUSERNAME" | openssl sha -binary | openssl base64
- */
+*/
 func (ac Account) GetPasswordHash() string {
 	if "" != ac.PasswordHash {
 		return ac.PasswordHash
@@ -123,4 +125,14 @@ func (ac Account) GetLastLoginTime() int64 {
 	} else {
 		return 0
 	}
+}
+
+type AccessRule struct {
+	Index          int
+	DestIpAddress  string
+	DestSubnetMask string
+	Note           string
+	Discard        bool
+	Priority       uint
+	SrcUsername    string
 }

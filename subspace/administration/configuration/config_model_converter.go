@@ -12,7 +12,7 @@ import (
 func ToConfigV1(system model.System, users []UserV1, profiles []ProfileV1, policies []PolicyV1, policyRules []PolicyRuleV1, profilesPolicies []ProfilesPolicyV1) ConfigV1 {
 	return ConfigV1{
 		ConfigSchemaVersion:             system.ConfigSchemaVersion,
-		CreatedTime:                     time.Now(),
+		CreatedTime:                     time.Now().UTC(),
 		InstanceId:                      system.InstanceId,
 		SubspaceVersion:                 system.SubspaceVersion,
 		SubspaceBuildNumber:             system.SubspaceBuildNumber,
@@ -78,32 +78,13 @@ func ParseSystemFromConfigV1(c ConfigV1) model.System {
 		SmtpUsername:       c.SmtpUsername,
 		SmtpPassword:       c.SmtpPassword,
 		//UpdatedDate: c.UpdatedDate,
-		//CreatedAt: c.CreatedAt,
+		//CreatedDate: c.CreatedDate,
 	}
 }
 
 /**
  * Convert User
  */
-func ParseUserV1(u UserV1) model.User {
-	user := model.User{
-		Id:               u.Id,
-		Email:            u.Email,
-		Alias:            u.Alias,
-		Role:             u.Role,
-		EmailVerified:    u.EmailVerified,
-		Enabled:          u.Enabled,
-		PasswordHash:     u.PasswordHash,
-		SetPasswordToken: u.SetPasswordToken,
-
-		RevokedDate:   u.RevokedDate,
-		LastLoginDate: u.LastLoginDate,
-		UpdatedDate:   u.UpdatedDate,
-		CreatedDate:   u.CreatedDate,
-	}
-	return user
-}
-
 func ToUserV1(u model.User) UserV1 {
 	userV1 := UserV1{
 		Id:               u.Id,
@@ -121,6 +102,25 @@ func ToUserV1(u model.User) UserV1 {
 		CreatedDate:   u.CreatedDate,
 	}
 	return userV1
+}
+
+func ParseUserV1(u UserV1) model.User {
+	user := model.User{
+		Id:               u.Id,
+		Email:            u.Email,
+		Alias:            u.Alias,
+		Role:             u.Role,
+		EmailVerified:    u.EmailVerified,
+		Enabled:          u.Enabled,
+		PasswordHash:     u.PasswordHash,
+		SetPasswordToken: u.SetPasswordToken,
+
+		RevokedDate:   u.RevokedDate,
+		LastLoginDate: u.LastLoginDate,
+		UpdatedDate:   u.UpdatedDate,
+		CreatedDate:   u.CreatedDate,
+	}
+	return user
 }
 
 /**
@@ -182,78 +182,78 @@ func ParseProfileV1(p ProfileV1) model.Profile {
 /**
  * Convert Policy
  */
-func ParsePolicyV1(u PolicyV1) model.Policy {
-	policy := model.Policy{
-		Id:          u.Id,
-		Name:        u.Name,
-		Description: u.Description,
-		UpdatedDate: u.UpdatedDate,
-		CreatedDate: u.CreatedDate,
-	}
-	return policy
-}
-
 func ToPolicyV1(u model.Policy) PolicyV1 {
 	policyV1 := PolicyV1{
-		Id:          u.Id,
+		ID:          u.ID,
 		Name:        u.Name,
 		Description: u.Description,
-		UpdatedDate: u.UpdatedDate,
-		CreatedDate: u.CreatedDate,
+		UpdatedAt:   u.UpdatedAt,
+		CreatedAt:   u.CreatedAt,
 	}
 	return policyV1
+}
+
+func ParsePolicyV1(u PolicyV1) model.Policy {
+	policy := model.Policy{
+		ID:          u.ID,
+		Name:        u.Name,
+		Description: u.Description,
+		UpdatedAt:   u.UpdatedAt,
+		CreatedAt:   u.CreatedAt,
+	}
+	return policy
 }
 
 /**
  * Convert PolicyRule
  */
-func ParsePolicyRuleV1(u PolicyRuleV1) model.PolicyRule {
-	policyRule := model.PolicyRule{
-		Id:                u.Id,
-		PolicyId:          u.PolicyId,
-		Priority:          u.Priority,
-		TargetDestination: u.TargetDestination,
-		Action:            u.Action,
-		UpdatedDate:       u.UpdatedDate,
-		CreatedDate:       u.CreatedDate,
-	}
-	return policyRule
-}
-
 func ToPolicyRuleV1(u model.PolicyRule) PolicyRuleV1 {
 	policyRuleV1 := PolicyRuleV1{
-		Id:                u.Id,
-		PolicyId:          u.PolicyId,
+		ID:                u.ID,
+		PolicyID:          u.PolicyID,
 		Priority:          u.Priority,
 		TargetDestination: u.TargetDestination,
 		Action:            u.Action,
-		UpdatedDate:       u.UpdatedDate,
-		CreatedDate:       u.CreatedDate,
+		UpdatedAt:         u.UpdatedAt,
+		CreatedAt:         u.CreatedAt,
 	}
 	return policyRuleV1
+}
+
+func ParsePolicyRuleV1(u PolicyRuleV1) model.PolicyRule {
+	policyRule := model.PolicyRule{
+		ID:                u.ID,
+		PolicyID:          u.PolicyID,
+		Priority:          u.Priority,
+		TargetDestination: u.TargetDestination,
+		Action:            u.Action,
+		UpdatedAt:         u.UpdatedAt,
+		CreatedAt:         u.CreatedAt,
+	}
+	return policyRule
 }
 
 /**
  * Convert ProfilesPolicy
  */
-func ParseProfilesPolicyV1(u ProfilesPolicyV1) model.ProfilesPolicy {
-	profilesPolicy := model.ProfilesPolicy{
-		Id:          u.Id,
-		ProfileId:   u.ProfileId,
-		PolicyId:    u.PolicyId,
-		UpdatedDate: u.UpdatedDate,
-		CreatedDate: u.CreatedDate,
-	}
-	return profilesPolicy
-}
-
 func ToProfilesPolicyV1(u model.ProfilesPolicy) ProfilesPolicyV1 {
 	profilesPolicyV1 := ProfilesPolicyV1{
-		Id:          u.Id,
-		ProfileId:   u.ProfileId,
-		PolicyId:    u.PolicyId,
-		UpdatedDate: u.UpdatedDate,
-		CreatedDate: u.CreatedDate,
+		ID:        u.ID,
+		ProfileID: u.ProfileID,
+		PolicyID:  u.PolicyID,
+		UpdatedAt: u.UpdatedAt,
+		CreatedAt: u.CreatedAt,
 	}
 	return profilesPolicyV1
+}
+
+func ParseProfilesPolicyV1(u ProfilesPolicyV1) model.ProfilesPolicy {
+	profilesPolicy := model.ProfilesPolicy{
+		ID:        u.ID,
+		ProfileID: u.ProfileID,
+		PolicyID:  u.PolicyID,
+		UpdatedAt: u.UpdatedAt,
+		CreatedAt: u.CreatedAt,
+	}
+	return profilesPolicy
 }
