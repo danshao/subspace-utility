@@ -13,10 +13,11 @@ sessions:subspace:1_1492575227928 SID-1_1492575227928-[L2TP]-45
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-redis/redis"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 	"time"
+
+	"github.com/go-redis/redis"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 )
 
 type SessionRepository interface {
@@ -36,11 +37,11 @@ type RedisSessionRepository struct {
 func InitSessionRepositoryWithHost(host string) (repo SessionRepository) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     config.FormatRedisUri(host),
-		Password: "",                       // no password set
+		Password: "",                           // no password set
 		DB:       config.REDIS_VPN_SESSIONS_DB, // use default DB
 	})
 	return RedisSessionRepository{
-		Hub: config.DEFAULT_HUB_NAME,
+		Hub:    config.DEFAULT_HUB_NAME,
 		Client: client,
 	}
 }

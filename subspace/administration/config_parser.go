@@ -1,9 +1,10 @@
 package administration
 
 import (
+	"errors"
+
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration/configuration"
 	"gopkg.in/yaml.v2"
-	"errors"
 )
 
 func ParseConfig(yamlData []byte) (configuration.SubspaceConfig, error) {

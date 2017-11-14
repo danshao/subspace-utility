@@ -1,8 +1,8 @@
 package configuration
 
 import (
-	"time"
 	"errors"
+	"time"
 )
 
 type ProfileV1 struct {
@@ -18,14 +18,12 @@ type ProfileV1 struct {
 	LoginCount     uint   `yaml:"login_count"`
 	VpnHost        string `yaml:"vpn_host"`
 	PreSharedKey   string `yaml:"pre_shared_key"`
-
-	//IncomingBytes uint `yaml:"incoming_bytes"`
-	//OutgoingBytes uint `yaml:"outgoing_bytes"`
-
+	//IncomingBytes  uint       `yaml:"incoming_bytes"`
+	//OutgoingBytes  uint       `yaml:"outgoing_bytes"`
 	RevokedDate   *time.Time `yaml:"revoked_date,omitempty"`
 	LastLoginDate *time.Time `yaml:"lastLogin_date,omitempty"`
-	UpdatedDate   time.Time `yaml:"updated_date"`
-	CreatedDate   time.Time `yaml:"created_date"`
+	UpdatedDate   time.Time  `yaml:"updated_date"`
+	CreatedDate   time.Time  `yaml:"created_date"`
 }
 
 func (profile *ProfileV1) Validate() error {

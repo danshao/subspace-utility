@@ -2,9 +2,10 @@ package backup
 
 import (
 	"sync"
+
 	"github.com/jinzhu/gorm"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/administration"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/config"
 )
 
 var instance *controller
@@ -22,7 +23,7 @@ type Callback interface {
 type Step int
 
 const (
-	IDLE    = iota
+	IDLE = iota
 	RUNNING
 	SUCCEED
 	FAILED
@@ -116,7 +117,7 @@ func (controller *controller) GetStatus() Status {
 	case controller.running:
 		status.Step = RUNNING
 
-	default:  // Should never happen
+	default: // Should never happen
 		status.Step = UNKNOWN
 	}
 	return status

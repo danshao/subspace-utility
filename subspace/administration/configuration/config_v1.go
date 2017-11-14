@@ -1,53 +1,58 @@
 package configuration
 
 import (
-	"time"
-	"crypto/sha1"
 	"bytes"
+	"crypto/sha1"
 	"encoding/binary"
-	"fmt"
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 	"errors"
+	"fmt"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils"
 	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/utils/validator"
 )
 
 const SALT = "5ubSp4ce@EcoworkInc"
 
 type ConfigV1 struct {
-	ConfigSchemaVersion uint         `yaml:"config_schema_version"`
-	CreatedTime         time.Time    `yaml:"created_time"`
-	InstanceId          string       `yaml:"instance_id"`
-	Uuid                string       `yaml:"uuid"`
-	VpnHost             string       `yaml:"vpn_host"`
-	Ip                  string       `yaml:"ip"`
-	PreSharedKey        string       `yaml:"pre_shared_key"`
-	CheckSum            string       `yaml:"check_sum"`
+	ConfigSchemaVersion uint      `yaml:"config_schema_version"`
+	CreatedTime         time.Time `yaml:"created_time"`
+	InstanceId          string    `yaml:"instance_id"`
+	Uuid                string    `yaml:"uuid"`
+	VpnHost             string    `yaml:"vpn_host"`
+	Ip                  string    `yaml:"ip"`
+	PreSharedKey        string    `yaml:"pre_shared_key"`
+	CheckSum            string    `yaml:"check_sum"`
 
-	SmtpHost           string        `yaml:"smtp_host"`
-	SmtpPort           uint          `yaml:"smtp_port"`
-	SmtpAuthentication bool          `yaml:"smtp_authentication"`
-	SmtpUsername       string        `yaml:"smtp_username"`
-	SmtpPassword       string        `yaml:"smtp_password"`
-	SmtpValid          bool          `yaml:"smtp_valid"`
-	SmtpSenderName     string        `yaml:"smtp_sender_name"`
-	SmtpSenderEmail    string        `yaml:"smtp_sender_email"`
+	SmtpHost           string `yaml:"smtp_host"`
+	SmtpPort           uint   `yaml:"smtp_port"`
+	SmtpAuthentication bool   `yaml:"smtp_authentication"`
+	SmtpUsername       string `yaml:"smtp_username"`
+	SmtpPassword       string `yaml:"smtp_password"`
+	SmtpValid          bool   `yaml:"smtp_valid"`
+	SmtpSenderName     string `yaml:"smtp_sender_name"`
+	SmtpSenderEmail    string `yaml:"smtp_sender_email"`
 
-	SubspaceVersion     string       `yaml:"subspace_version"`
-	SubspaceBuildNumber uint         `yaml:"subspace_build_number"`
+	SubspaceVersion     string `yaml:"subspace_version"`
+	SubspaceBuildNumber uint   `yaml:"subspace_build_number"`
 
-	VpnServerVersion                string      `yaml:"vpn_server_version"`
-	VpnServerBuildNumber            uint        `yaml:"vpn_server_build_number"`
-	VpnServerAdministrationPassword string      `yaml:"vpn_server_administration_password"`
-	VpnServerAdministrationPort     uint        `yaml:"vpn_server_administration_port"`
-	VpnHubName                      string      `yaml:"vpn_hub_name"`
+	VpnServerVersion                string `yaml:"vpn_server_version"`
+	VpnServerBuildNumber            uint   `yaml:"vpn_server_build_number"`
+	VpnServerAdministrationPassword string `yaml:"vpn_server_administration_password"`
+	VpnServerAdministrationPort     uint   `yaml:"vpn_server_administration_port"`
+	VpnHubName                      string `yaml:"vpn_hub_name"`
 
-	UserSchemaVersion uint           `yaml:"user_schema_version"`
-	Users             []UserV1       `yaml:"users"`
+	UserSchemaVersion uint     `yaml:"user_schema_version"`
+	Users             []UserV1 `yaml:"users"`
 
 	ProfileSchemaVersion uint        `yaml:"profiles_schema_version"`
 	Profiles             []ProfileV1 `yaml:"profiles"`
+
+	Policies         []PolicyV1         `yaml:"policies"`
+	PolicyRules      []PolicyRuleV1     `yaml:"policy_rules"`
+	ProfilesPolicies []ProfilesPolicyV1 `yaml:"profiles_policies"`
 }
 
 func (c ConfigV1) GetConfigSchemaVersion() uint {
@@ -98,6 +103,30 @@ func (c ConfigV1) GetProfiles() []model.Profile {
 	return profiles
 }
 
+func (c ConfigV1) GetPolicies() []model.Policy {
+	policies := make([]model.Policy, 0)
+	for _, p := range c.Policies {
+		policies = append(policies, ParsePolicyV1(p))
+	}
+	return policies
+}
+
+func (c ConfigV1) GetPolicyRules() []model.PolicyRule {
+	policyRules := make([]model.PolicyRule, 0)
+	for _, p := range c.PolicyRules {
+		policyRules = append(policyRules, ParsePolicyRuleV1(p))
+	}
+	return policyRules
+}
+
+func (c ConfigV1) GetProfilesPolicies() []model.ProfilesPolicy {
+	profilesPolicies := make([]model.ProfilesPolicy, 0)
+	for _, p := range c.ProfilesPolicies {
+		profilesPolicies = append(profilesPolicies, ParseProfilesPolicyV1(p))
+	}
+	return profilesPolicies
+}
+
 func (c ConfigV1) Validate(db *gorm.DB) error {
 	if !validator.IsValidPreSharedKey(c.PreSharedKey) {
 		return errors.New("Pre-shared key is invalid.")
@@ -129,6 +158,24 @@ func (c ConfigV1) Validate(db *gorm.DB) error {
 	// Validate profiles
 	for _, profile := range c.Profiles {
 		if err := profile.Validate(); nil != err {
+			return err
+		}
+	}
+
+	for _, policy := range c.Policies {
+		if err := policy.Validate(); nil != err {
+			return err
+		}
+	}
+
+	for _, policyRule := range c.PolicyRules {
+		if err := policyRule.Validate(); nil != err {
+			return err
+		}
+	}
+
+	for _, profilesPolicy := range c.ProfilesPolicies {
+		if err := profilesPolicy.Validate(); nil != err {
 			return err
 		}
 	}

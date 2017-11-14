@@ -1,9 +1,10 @@
 package configuration
 
 import (
-	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
-	"github.com/jinzhu/gorm"
 	"time"
+
+	"github.com/jinzhu/gorm"
+	"gitlab.ecoworkinc.com/Subspace/subspace-utility/subspace/model"
 )
 
 type VersionedConfig interface {
@@ -18,6 +19,9 @@ type SubspaceConfig interface {
 	GetSystem() model.System
 	GetUsers() []model.User
 	GetProfiles() []model.Profile
+	GetPolicies() []model.Policy
+	GetPolicyRules() []model.PolicyRule
+	GetProfilesPolicies() []model.ProfilesPolicy
 	GetConfigCreateTime() time.Time
 }
 
